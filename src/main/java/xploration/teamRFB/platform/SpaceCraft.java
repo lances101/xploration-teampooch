@@ -17,19 +17,22 @@ public class Spacecraft extends RFBAgent{
 
     @Override
     protected void setup() {
+        doWait(7000);
         super.setup();
         registerSelfWithServices(new String[]{"Spacecraft"});
+
         registrationEnd = DateTime.now().plusSeconds(10);
-        System.out.printf("%s: registration is up!!! Registration ends at %s%n",
-                getLocalName(),
-                registrationEnd.toString());
+        System.out.printf("%s: registration is up! Registration ends at %s%n", getLocalName(), registrationEnd.toString("HH:mm:ss"));
 
         addBehaviour(new CyclicBehaviour(this) {
             @Override
             public void action() {
-                ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
-                if(msg == null) return;
-                if (msg.getProtocol().equalsIgnoreCase("Registration")) {
+                ACLMessage msg = receive(MessageTemplate.MatchProtocol("Registration"));
+                if(msg == null){
+                    block();
+                    return;
+                }
+                if (msg.getPerformative() == ACLMessage.REQUEST) {
                     ACLMessage reply = msg.createReply();
                     System.out.printf("%s: got new registration request from %s to register '%s'%n",
                             getLocalName(), msg.getSender().getLocalName(), msg.getContent());
@@ -38,9 +41,9 @@ public class Spacecraft extends RFBAgent{
                         send(reply);
                         return;
                     }
+
                     reply.setPerformative(ACLMessage.AGREE);
                     send(reply);
-
                     ACLMessage replyInform = msg.createReply();
                     AID sender = msg.getSender();
                     if(companies.contains(sender)) {
