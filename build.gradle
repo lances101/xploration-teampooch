@@ -1,19 +1,26 @@
 group 'xploration2016'
 version '0.1'
-
 apply plugin: 'java'
+apply plugin: 'idea'
 
 sourceCompatibility = 1.5
 
+idea {
+    module {
+        downloadJavadoc = true
+    }
+}
+
 repositories {
     mavenCentral()
-    maven { url "https://jitpack.io" }
     maven { url "http://jade.tilab.com/maven" }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
-    compile 'com.github.kradalby:xploration-shared:0.0.2'
     compile 'com.tilab.jade:jade:4.4.0'
+    compile 'com.github.kradalby:xploration-shared:0.0.2'
     compile 'joda-time:joda-time:2.9.3'
 }
+
 

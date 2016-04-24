@@ -11,19 +11,13 @@ import jade.lang.acl.MessageTemplate;
 import xploration.teamRFB.common.RFBAgent;
 
 public class Company extends RFBAgent{
-    enum REGISTRATION_STATE{
-        NONE,
-        REQUESTED,
-        WAITING,
-        SUCCESS
-    }
     public final static String CompanyName = "Pooch";
     public final static String REGISTRATION = "Registration";
     public boolean regDone = false;
     @Override
     protected void setup() {
         super.setup();
-        registerSelf("Company");
+        //registerSelfWithServices(new String[]{"Company"});
 
         addBehaviour(new OneShotBehaviour(this) {
             @Override
@@ -37,7 +31,7 @@ public class Company extends RFBAgent{
                 try {
                     found = DFService.search(myAgent, dfd);
                     if(found.length == 0){
-                        System.out.println(myAgent.getName() + " - Search yielded nothing. Waiting.");
+                        System.out.println(myAgent.getLocalName() + " - Search yielded nothing. Waiting.");
                         doWait(5000);
                         return;
                     }
@@ -48,7 +42,7 @@ public class Company extends RFBAgent{
                         message.setContent(CompanyName);
                         message.addReceiver(agent.getName());
                         send(message);
-                        System.out.println(getName()+": requesting registration from Spacecraft");
+                        System.out.println(getLocalName() + ": requesting registration from Spacecraft");
                     }
                 } catch (FIPAException e) {
                     e.printStackTrace();
@@ -63,18 +57,18 @@ public class Company extends RFBAgent{
                 switch(msg.getPerformative())
                 {
                     case ACLMessage.AGREE:
-                        System.out.println(getName() + ": Spacecraft sent 'AGREE'. Waiting!");
+                        System.out.println(getLocalName() + ": Spacecraft sent 'AGREE'. Waiting!");
                         break;
                     case ACLMessage.REFUSE:
-                        System.out.println(getName() + ": Spacecraft sent 'REFUSE'. It appears we are late, tough luck. ");
+                        System.out.println(getLocalName() + ": Spacecraft sent 'REFUSE'. It appears we are late, tough luck. ");
                         regDone = true;
                         break;
                     case ACLMessage.FAILURE:
-                        System.out.println(getName() + ": Spacecraft sent 'FAILURE'. We are already registered!");
+                        System.out.println(getLocalName() + ": Spacecraft sent 'FAILURE'. We are already registered!");
                         regDone = true;
                         break;
                     case ACLMessage.INFORM:
-                        System.out.println(getName() + ": Spacecraft sent 'INFORM'. We are registered!");
+                        System.out.println(getLocalName() + ": Spacecraft sent 'INFORM'. We are registered!");
                         regDone = true;
                         break;
                     default:

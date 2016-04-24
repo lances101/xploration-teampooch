@@ -9,28 +9,35 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+/**
+ *
+ */
 public class RFBAgent extends Agent{
+
+    protected CyclicBehaviour NotUnderStoodBehavior = new CyclicBehaviour() {
+        @Override
+        public void action() {
+            ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.NOT_UNDERSTOOD));
+            if (msg != null) {
+                System.out.println(getName() + ": got [NOT_UNDERSTOOD] from " + msg.getSender());
+            }
+            doWait(500);
+        }
+    };
 
     @Override
     protected void setup() {
         addBehaviour(NotUnderStoodBehavior);
     }
 
-    protected CyclicBehaviour NotUnderStoodBehavior = new CyclicBehaviour() {
-        @Override
-        public void action() {
-            ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.NOT_UNDERSTOOD));
-            if(msg == null) return;
-            System.out.println(getName() + ": got [NOT_UNDERSTOOD] from " + msg.getSender());
-        }
-    };
-
-    protected void registerSelf(String type)
+    protected void registerSelfWithServices(String[] types)
     {
         DFAgentDescription dfd = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
         sd.setName(this.getName());
-        sd.setType(type);
+        for (String type : types) {
+            sd.setType(type);
+        }
         dfd.addServices(sd);
         try {
             DFService.register(this, dfd);
@@ -38,9 +45,7 @@ public class RFBAgent extends Agent{
             e.printStackTrace();
         }
 
-        System.out.println(getName() + ": registered as " + type);
-        dfd = null;
-        sd = null;
+        System.out.println(getLocalName() + ": registered.");
     }
 
     protected void replyWithNotUnderstood(ACLMessage msg)
