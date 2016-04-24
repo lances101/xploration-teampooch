@@ -20,7 +20,7 @@ public class Spacecraft extends RFBAgent{
         super.setup();
         registerSelfWithServices(new String[]{"Spacecraft"});
         registrationEnd = DateTime.now().plusSeconds(10);
-        System.out.printf("%s: registration is up. Registration ends at %s%n",
+        System.out.printf("%s: registration is up!!! Registration ends at %s%n",
                 getLocalName(),
                 registrationEnd.toString());
 
