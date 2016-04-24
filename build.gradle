@@ -1,0 +1,18 @@
+group 'xploration2016'
+version '0.1'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+    maven { url "http://jade.tilab.com/maven" }
+}
+
+dependencies {
+    compile 'com.github.kradalby:xploration-shared:0.0.2'
+    compile 'com.tilab.jade:jade:4.4.0'
+}
+
