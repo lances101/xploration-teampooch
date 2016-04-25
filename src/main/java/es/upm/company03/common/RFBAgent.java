@@ -1,4 +1,4 @@
-package xploration.teamRFB.common;
+package es.upm.company03.common;
 
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
