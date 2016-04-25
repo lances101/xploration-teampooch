@@ -1,15 +1,15 @@
-package xploration.teamRFB.platform;
+package es.upm.company03.platform;
 
+import es.upm.company03.common.RFBAgent;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.joda.time.DateTime;
-import xploration.teamRFB.common.RFBAgent;
 
 import java.util.ArrayList;
 
-public class Spacecraft extends RFBAgent{
+public class Spacecraft extends RFBAgent {
 
     ArrayList<AID> companies = new ArrayList<>();
     DateTime registrationEnd;

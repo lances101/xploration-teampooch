@@ -1,5 +1,6 @@
-package xploration.teamRFB.company;
+package es.upm.company03.company;
 
+import es.upm.company03.common.RFBAgent;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -7,9 +8,8 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import xploration.teamRFB.common.RFBAgent;
 
-public class Company extends RFBAgent{
+public class Company extends RFBAgent {
     enum REGSTATE{
         START,
         WAITING,
