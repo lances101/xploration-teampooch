@@ -11,19 +11,12 @@ import java.util.ArrayList;
 
 public class Spacecraft extends RFBAgent {
 
-    ArrayList<AID> companies = new ArrayList<>();
+    ArrayList<AID> companies = new ArrayList<AID>();
     DateTime registrationEnd;
 
 
     @Override
     protected void setup() {
-        doWait(7000);
-        super.setup();
-        registerSelfWithServices(new String[]{"Spacecraft"});
-
-        registrationEnd = DateTime.now().plusSeconds(10);
-        System.out.printf("%s: registration is up! Registration ends at %s%n", getLocalName(), registrationEnd.toString("HH:mm:ss"));
-
         addBehaviour(new CyclicBehaviour(this) {
             @Override
             public void action() {
@@ -62,6 +55,12 @@ public class Spacecraft extends RFBAgent {
                 }
             }
         });
+
+        super.setup();
+        registrationEnd = DateTime.now().plusSeconds(60);
+        System.out.printf("%s: registration is up! Registration ends at %s%n", getLocalName(), registrationEnd.toString("HH:mm:ss"));
+
+        registerSelfWithServices(new String[]{"SPACECRAFT"});
 
     }
 }
