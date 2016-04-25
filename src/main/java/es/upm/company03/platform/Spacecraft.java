@@ -9,58 +9,72 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 
+/**
+ * Spacecraft agent. Handles the initialization of other agents of the platform.
+ * Handles the following behaviors:
+ * <br>
+ *  - Company registration
+ */
 public class Spacecraft extends RFBAgent {
 
     ArrayList<AID> companies = new ArrayList<AID>();
-    DateTime registrationEnd;
-
 
     @Override
     protected void setup() {
-        addBehaviour(new CyclicBehaviour(this) {
-            @Override
-            public void action() {
-                ACLMessage msg = receive(MessageTemplate.MatchProtocol("Registration"));
-                if(msg == null){
-                    block();
+        //See comment in Company.java
+        registrationBehavior.setAgent(this);
+        addBehaviour(registrationBehavior);
+
+        registrationDeadline = DateTime.now().plusSeconds(60);
+        System.out.printf("%s: registration is up! Registration ends at %s%n",
+                getLocalName(), registrationDeadline.toString("HH:mm:ss"));
+
+        registerSelfWithServices(new String[]{"Spacecraft"});
+        super.setup();
+    }
+
+
+    DateTime registrationDeadline;
+    /**
+     * Handles the registration.
+     * Accepts only REQUEST with `Registration` protocol.
+     */
+    CyclicBehaviour registrationBehavior = new CyclicBehaviour() {
+        @Override
+        public void action() {
+            ACLMessage msg = receive(MessageTemplate.MatchProtocol("Registration"));
+            if(msg == null){
+                block();
+                return;
+            }
+            if (msg.getPerformative() == ACLMessage.REQUEST) {
+                ACLMessage reply = msg.createReply();
+                System.out.printf("%s: got new registration request from %s to register '%s'%n",
+                        getLocalName(), msg.getSender().getLocalName(), msg.getContent());
+                if(registrationDeadline.isBeforeNow()) {
+                    reply.setPerformative(ACLMessage.REFUSE);
+                    send(reply);
                     return;
                 }
-                if (msg.getPerformative() == ACLMessage.REQUEST) {
-                    ACLMessage reply = msg.createReply();
-                    System.out.printf("%s: got new registration request from %s to register '%s'%n",
-                            getLocalName(), msg.getSender().getLocalName(), msg.getContent());
-                    if(registrationEnd.isBeforeNow()) {
-                        reply.setPerformative(ACLMessage.REFUSE);
-                        send(reply);
-                        return;
-                    }
 
-                    reply.setPerformative(ACLMessage.AGREE);
-                    send(reply);
-                    ACLMessage replyInform = msg.createReply();
-                    AID sender = msg.getSender();
-                    if(companies.contains(sender)) {
-                        replyInform.setPerformative(ACLMessage.FAILURE);
-                    }
-                    else{
-                        System.out.printf("%s: team '%s' registered.%n",
-                                getLocalName(), msg.getContent());
-                        companies.add(sender);
-                        replyInform.setPerformative(ACLMessage.INFORM);
-                    }
-                    send(replyInform);
-
-                } else {
-                    replyWithNotUnderstood(msg);
+                reply.setPerformative(ACLMessage.AGREE);
+                send(reply);
+                ACLMessage replyInform = msg.createReply();
+                AID sender = msg.getSender();
+                if(companies.contains(sender)) {
+                    replyInform.setPerformative(ACLMessage.FAILURE);
                 }
+                else{
+                    System.out.printf("%s: team '%s' registered.%n",
+                            getLocalName(), msg.getContent());
+                    companies.add(sender);
+                    replyInform.setPerformative(ACLMessage.INFORM);
+                }
+                send(replyInform);
+
+            } else {
+                replyWithNotUnderstood(msg);
             }
-        });
-
-        super.setup();
-        registrationEnd = DateTime.now().plusSeconds(60);
-        System.out.printf("%s: registration is up! Registration ends at %s%n", getLocalName(), registrationEnd.toString("HH:mm:ss"));
-
-        registerSelfWithServices(new String[]{"SPACECRAFT"});
-
-    }
+        }
+    };
 }

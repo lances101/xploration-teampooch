@@ -5,6 +5,6 @@ package es.upm.company03.common;
  */
 public class main {
     public static void main(String[] args) {
-        System.out.println("Company02");
+        System.out.println("Company03");
     }
 }

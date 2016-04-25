@@ -10,10 +10,15 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 /**
- *
+ *  RFB agent does not have much for itself, it inherits Agent.
+ *  It implements a behavior that handles not_understood messages
+ *  It has a couple of helper methods, but that's about it.
  */
 public class RFBAgent extends Agent{
 
+    /**
+     * Simple behaviors that catches NOT_UNDERSTOOD's and outputs them to console.
+     */
     protected CyclicBehaviour NotUnderStoodBehavior = new CyclicBehaviour() {
         @Override
         public void action() {
@@ -25,11 +30,19 @@ public class RFBAgent extends Agent{
         }
     };
 
+    /**
+     * Just adds the NOT_UNDERSTOOD behavior.
+     */
     @Override
     protected void setup() {
         addBehaviour(NotUnderStoodBehavior);
     }
 
+    /**
+     * Registers the agent in the DFService with the
+     * services that are provided as a string.
+     * @param types services to register it with
+     */
     protected void registerSelfWithServices(String[] types)
     {
         DFAgentDescription dfd = new DFAgentDescription();
@@ -48,6 +61,12 @@ public class RFBAgent extends Agent{
         System.out.println(getLocalName() + ": registered.");
     }
 
+    /**
+     * Allows to handle a message by replying to it with a
+     * NOT_UNDERSTOOD performative. Use this for debugging in
+     * other behaviors.
+     * @param msg the ACLMessage received
+     */
     protected void replyWithNotUnderstood(ACLMessage msg)
     {
         ACLMessage reply = msg.createReply();
