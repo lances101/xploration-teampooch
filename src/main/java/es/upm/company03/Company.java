@@ -1,4 +1,4 @@
-package es.upm.company03.company;
+package es.upm.company03;
 
 import es.upm.company03.common.RFBAgent;
 import jade.core.behaviours.SimpleBehaviour;
@@ -86,7 +86,7 @@ public class Company extends RFBAgent {
         {
             DFAgentDescription dfd = new DFAgentDescription();
             ServiceDescription sd = new ServiceDescription();
-            sd.setType("Spacecraft");
+            sd.setType(pclNameRegistration);
             dfd.addServices(sd);
 
             DFAgentDescription[] found;

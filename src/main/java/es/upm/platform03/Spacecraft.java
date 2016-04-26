@@ -1,4 +1,4 @@
-package es.upm.company03.platform;
+package es.upm.platform03;
 
 import es.upm.company03.common.RFBAgent;
 import jade.core.AID;
@@ -29,7 +29,7 @@ public class Spacecraft extends RFBAgent {
         System.out.printf("%s: registration is up! Registration ends at %s%n",
                 getLocalName(), registrationDeadline.toString("HH:mm:ss"));
 
-        registerSelfWithServices(new String[]{"Spacecraft"});
+        registerSelfWithServices(new String[]{"Registration"});
         super.setup();
     }
 
@@ -56,22 +56,21 @@ public class Spacecraft extends RFBAgent {
                     send(reply);
                     return;
                 }
-
                 reply.setPerformative(ACLMessage.AGREE);
                 send(reply);
+
                 ACLMessage replyInform = msg.createReply();
-                AID sender = msg.getSender();
-                if(companies.contains(sender)) {
+                AID senderID = msg.getSender();
+
+                if (companies.contains(senderID)) {
                     replyInform.setPerformative(ACLMessage.FAILURE);
-                }
-                else{
-                    System.out.printf("%s: team '%s' registered.%n",
-                            getLocalName(), msg.getContent());
-                    companies.add(sender);
+                } else {
+                    System.out.printf("%s: team '%s' registered.%n", getLocalName(), msg.getContent());
+                    companies.add(senderID);
                     replyInform.setPerformative(ACLMessage.INFORM);
                 }
-                send(replyInform);
 
+                send(replyInform);
             } else {
                 replyWithNotUnderstood(msg);
             }

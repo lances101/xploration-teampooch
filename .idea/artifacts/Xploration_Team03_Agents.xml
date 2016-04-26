@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Xploration.Team03.Agents">
+    <output-path>$PROJECT_DIR$/out/artifacts/Xploration_Team03_Agents</output-path>
+    <root id="archive" name="Xploration.Team03.Agents.jar">
+      <element id="module-output" name="Xploration" />
+    </root>
+  </artifact>
+</component>
