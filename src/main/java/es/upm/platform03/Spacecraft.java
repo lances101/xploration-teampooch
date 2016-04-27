@@ -27,7 +27,7 @@ public class Spacecraft extends RFBAgent {
     CyclicBehaviour registrationBehavior = new CyclicBehaviour() {
         @Override
         public void action() {
-            ACLMessage msg = receive(MessageTemplate.MatchProtocol("Registration"));
+            ACLMessage msg = receive(MessageTemplate.MatchProtocol(pclNameRegistration));
             if (msg == null) {
                 block();
                 return;
@@ -35,7 +35,7 @@ public class Spacecraft extends RFBAgent {
             if (msg.getPerformative() == ACLMessage.REQUEST) {
                 ACLMessage reply = msg.createReply();
                 System.out.printf("%s: got new reg request from %s for '%s'%n",
-                        getLocalName(), pclNameRegistration, msg.getSender().getLocalName(), msg.getContent());
+                        getLocalName(), msg.getSender().getLocalName(), msg.getContent());
                 if (registrationDeadline.isBeforeNow()) {
                     reply.setPerformative(ACLMessage.REFUSE);
                     send(reply);
@@ -50,7 +50,7 @@ public class Spacecraft extends RFBAgent {
                 if (companies.contains(senderID)) {
                     replyInform.setPerformative(ACLMessage.FAILURE);
                 } else {
-                    System.out.printf("%s: team '%s' registered, informing...%n", getLocalName(), pclNameRegistration, msg.getContent());
+                    System.out.printf("%s: team '%s' registered, informing...%n", getLocalName(), msg.getContent());
                     companies.add(senderID);
                     replyInform.setPerformative(ACLMessage.INFORM);
                 }
@@ -77,7 +77,7 @@ public class Spacecraft extends RFBAgent {
 
     @Override
     protected void setup() {
-        System.out.printf("%s is starting up!", "Spacecraft03");
+        System.out.printf("%s is starting up!%n", "Spacecraft03");
 
         //See comment in Company.java
         registrationBehavior.setAgent(this);

@@ -79,7 +79,7 @@ public class Company extends RFBAgent {
                     message.addReceiver(agent.getName());
                     send(message);
                     System.out.printf("%s: requesting registration from Spacecraft%n",
-                            getLocalName(), pclNameRegistration);
+                            getLocalName());
                 }
                 regState = REGSTATE.WAITING;
                 return;
@@ -97,21 +97,21 @@ public class Company extends RFBAgent {
             switch (msg.getPerformative()) {
                 case ACLMessage.AGREE:
                     System.out.printf("%s: Spacecraft sent 'AGREE'. Waiting!%n",
-                            getLocalName(), pclNameRegistration);
+                            getLocalName());
                     break;
                 case ACLMessage.REFUSE:
                     System.out.printf("%s: Spacecraft sent 'REFUSE'. It appears we are late, tough luck. %n",
-                            getLocalName(), pclNameRegistration);
+                            getLocalName());
                     regState = REGSTATE.FAILED;
                     break;
                 case ACLMessage.FAILURE:
                     System.out.printf("%s: Spacecraft sent 'FAILURE'. We are already registered!%n",
-                            getLocalName(), pclNameRegistration);
+                            getLocalName());
                     regState = REGSTATE.FAILED;
                     break;
                 case ACLMessage.INFORM:
                     System.out.printf("%s: Spacecraft sent 'INFORM'. We are registered!%n",
-                            getLocalName(), pclNameRegistration);
+                            getLocalName());
                     regState = REGSTATE.END;
                     break;
                 default:
@@ -123,7 +123,7 @@ public class Company extends RFBAgent {
 
     @Override
     protected void setup() {
-        System.out.printf("%s is starting up!", companyName);
+        System.out.printf("%s is starting up!%n", companyName);
 
         //We define the behaviours outside and then add them.
         //Helps to keep the code more structurized and we can
