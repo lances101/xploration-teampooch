@@ -58,7 +58,7 @@ public class RFBAgent extends Agent{
             e.printStackTrace();
         }
 
-        System.out.println(getLocalName() + ": registered.");
+        System.out.println(getLocalName() + ": registered in the DFServices.");
     }
 
     /**

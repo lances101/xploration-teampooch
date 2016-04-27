@@ -1,8 +1,22 @@
 group 'xploration2016'
-version '0.1'
+version '0.1d'
 
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'maven'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "http://mvn.fap.no/content/repositories/xploration") {
+                authentication(userName: "xploration", password: "deb1032e908e5337259969f6a821a7ec075209c6272f16306e9c6e4e5d79")
+            }
+            pom.version = version
+            pom.artifactId = "company03"
+            pom.groupId = "es.upm.company03"
+        }
+    }
+}
 
 idea {
     module {
@@ -24,3 +38,14 @@ dependencies {
 }
 
 
+
+task fatJar(type: Jar) {
+    from {
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    with jar
+}

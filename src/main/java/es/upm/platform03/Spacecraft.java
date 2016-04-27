@@ -17,23 +17,8 @@ import java.util.ArrayList;
  */
 public class Spacecraft extends RFBAgent {
 
+    final static String pclNameRegistration = "Registration";
     ArrayList<AID> companies = new ArrayList<AID>();
-
-    @Override
-    protected void setup() {
-        //See comment in Company.java
-        registrationBehavior.setAgent(this);
-        addBehaviour(registrationBehavior);
-
-        registrationDeadline = DateTime.now().plusSeconds(60);
-        System.out.printf("%s: registration is up! Registration ends at %s%n",
-                getLocalName(), registrationDeadline.toString("HH:mm:ss"));
-
-        registerSelfWithServices(new String[]{"Registration"});
-        super.setup();
-    }
-
-
     DateTime registrationDeadline;
     /**
      * Handles the registration.
@@ -43,15 +28,15 @@ public class Spacecraft extends RFBAgent {
         @Override
         public void action() {
             ACLMessage msg = receive(MessageTemplate.MatchProtocol("Registration"));
-            if(msg == null){
+            if (msg == null) {
                 block();
                 return;
             }
             if (msg.getPerformative() == ACLMessage.REQUEST) {
                 ACLMessage reply = msg.createReply();
-                System.out.printf("%s: got new registration request from %s to register '%s'%n",
-                        getLocalName(), msg.getSender().getLocalName(), msg.getContent());
-                if(registrationDeadline.isBeforeNow()) {
+                System.out.printf("%s: got new reg request from %s for '%s'%n",
+                        getLocalName(), pclNameRegistration, msg.getSender().getLocalName(), msg.getContent());
+                if (registrationDeadline.isBeforeNow()) {
                     reply.setPerformative(ACLMessage.REFUSE);
                     send(reply);
                     return;
@@ -65,15 +50,44 @@ public class Spacecraft extends RFBAgent {
                 if (companies.contains(senderID)) {
                     replyInform.setPerformative(ACLMessage.FAILURE);
                 } else {
-                    System.out.printf("%s: team '%s' registered.%n", getLocalName(), msg.getContent());
+                    System.out.printf("%s: team '%s' registered, informing...%n", getLocalName(), pclNameRegistration, msg.getContent());
                     companies.add(senderID);
                     replyInform.setPerformative(ACLMessage.INFORM);
                 }
 
-                send(replyInform);
+                /*
+                    Artificial delay to account for other agents, since some of them
+                    manage to handle the AGREE message after the inform one.
+                 */
+                new java.util.Timer().schedule(
+                        new java.util.TimerTask() {
+                            @Override
+                            public void run() {
+                                send(replyInform);
+                            }
+                        },
+                        2000
+                );
+
             } else {
                 replyWithNotUnderstood(msg);
             }
         }
     };
+
+    @Override
+    protected void setup() {
+        System.out.printf("%s is starting up!", "Spacecraft03");
+
+        //See comment in Company.java
+        registrationBehavior.setAgent(this);
+        addBehaviour(registrationBehavior);
+
+        registrationDeadline = DateTime.now().plusSeconds(60);
+        System.out.printf("%s: registration is up! Registration ends at %s%n",
+                getLocalName(), registrationDeadline.toString("HH:mm:ss"));
+
+        registerSelfWithServices(new String[]{"Registration"});
+        super.setup();
+    }
 }
