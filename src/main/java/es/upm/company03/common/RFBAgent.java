@@ -1,5 +1,8 @@
 package es.upm.company03.common;
 
+import es.upm.ontology.XplorationOntology;
+import jade.content.lang.Codec;
+import jade.content.lang.sl.SLCodec;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
@@ -15,6 +18,10 @@ import jade.lang.acl.MessageTemplate;
  *  It has a couple of helper methods, but that's about it.
  */
 public class RFBAgent extends Agent{
+
+    protected Codec codec = new SLCodec();
+    protected XplorationOntology ontology = (XplorationOntology) XplorationOntology.getInstance();
+    protected MessageTemplate mtOntoAndCodec = MessageTemplate.and(MessageTemplate.MatchOntology(ontology.getName()), MessageTemplate.MatchLanguage(codec.getName()));
 
     /**
      * Simple behaviors that catches NOT_UNDERSTOOD's and outputs them to console.
@@ -35,6 +42,8 @@ public class RFBAgent extends Agent{
      */
     @Override
     protected void setup() {
+        getContentManager().registerLanguage(codec);
+        getContentManager().registerOntology(ontology);
         addBehaviour(NotUnderStoodBehavior);
     }
 

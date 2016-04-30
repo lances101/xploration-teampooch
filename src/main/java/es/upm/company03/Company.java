@@ -1,6 +1,9 @@
 package es.upm.company03;
 
 import es.upm.company03.common.RFBAgent;
+import es.upm.ontology.RegistrationRequest;
+import jade.content.lang.Codec;
+import jade.content.onto.OntologyException;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -8,6 +11,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+
 
 /**
  * Company agent. Handles the initialization of other agents of the company.
@@ -17,7 +21,38 @@ import jade.lang.acl.MessageTemplate;
  */
 public class Company extends RFBAgent {
 
+
     final static String companyName = "Company03";
+
+    @Override
+    protected void setup() {
+        System.out.printf("%s is starting up!%n", companyName);
+
+        //We define the behaviours outside and then add them.
+        //Helps to keep the code more structurized and we can
+        //do shit like moving the registration in the DFService
+        //after adding the behaviors without much hassle.
+        //TODO: remove this comment by 02/05/2016
+        registrationBehavior.setAgent(this);
+        addBehaviour(registrationBehavior);
+
+        registerSelfWithServices(new String[]{"Company"});
+        super.setup();
+
+
+    }
+
+    /**
+     * States for registration behavior.
+     * Here because inner classes cannot have
+     * static declarations.
+     */
+    enum REGSTATE {
+        START,
+        WAITING,
+        FAILED,
+        END
+    }
     /**
      * Registation behavior with States.
      * Ends if succeeds and tries 3 times if it fails.
@@ -25,7 +60,6 @@ public class Company extends RFBAgent {
     SimpleBehaviour registrationBehavior = new SimpleBehaviour() {
 
         final static int maxRegTries = 3;
-        final static String pclNameRegistration = "Registration";
         REGSTATE regState = REGSTATE.START;
         int regTries = 0;
 
@@ -57,7 +91,7 @@ public class Company extends RFBAgent {
         void Register() {
             DFAgentDescription dfd = new DFAgentDescription();
             ServiceDescription sd = new ServiceDescription();
-            sd.setType(pclNameRegistration);
+            sd.setType(ontology.PROTOCOL_REGISTRATION);
             dfd.addServices(sd);
 
             DFAgentDescription[] found;
@@ -74,9 +108,16 @@ public class Company extends RFBAgent {
                         myAgent.getLocalName(), found.length);
                 for (DFAgentDescription agent : found) {
                     ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-                    message.setProtocol(pclNameRegistration);
-                    message.setContent(companyName);
+                    message.setProtocol(ontology.PROTOCOL_REGISTRATION);
+                    message.setOntology(ontology.getName());
+                    message.setLanguage(codec.getName());
                     message.addReceiver(agent.getName());
+
+                    RegistrationRequest regReq = new RegistrationRequest();
+                    regReq.setCompany(companyName);
+
+                    getContentManager().fillContent(message,  regReq);
+
                     send(message);
                     System.out.printf("%s: requesting registration from Spacecraft%n",
                             getLocalName());
@@ -85,15 +126,26 @@ public class Company extends RFBAgent {
                 return;
             } catch (FIPAException e) {
                 e.printStackTrace();
+            } catch (Codec.CodecException e) {
+                e.printStackTrace();
+            } catch (OntologyException e) {
+                e.printStackTrace();
             }
         }
 
         void HandleMessages() {
-            ACLMessage msg = receive(MessageTemplate.MatchProtocol(pclNameRegistration));
+            ACLMessage msg = receive();
             if (msg == null) {
                 block();
                 return;
             }
+            MessageTemplate mtAll = MessageTemplate.and(mtOntoAndCodec, MessageTemplate.MatchProtocol(ontology.PROTOCOL_REGISTRATION));
+            if (!mtAll.match(msg)) {
+                replyWithNotUnderstood(msg);
+                block();
+                return;
+            }
+
             switch (msg.getPerformative()) {
                 case ACLMessage.AGREE:
                     System.out.printf("%s: Spacecraft sent 'AGREE'. Waiting!%n",
@@ -120,31 +172,4 @@ public class Company extends RFBAgent {
             }
         }
     };
-
-    @Override
-    protected void setup() {
-        System.out.printf("%s is starting up!%n", companyName);
-
-        //We define the behaviours outside and then add them.
-        //Helps to keep the code more structurized and we can
-        //do shit like moving the registration in the DFService
-        //after adding the behaviors without much hassle.
-        //TODO: remove this comment by 02/05/2016
-        registrationBehavior.setAgent(this);
-        addBehaviour(registrationBehavior);
-
-        registerSelfWithServices(new String[]{"Company"});
-        super.setup();
-    }
-    /**
-     * States for registration behavior.
-     * Here because inner classes cannot have
-     * static declarations.
-     */
-    enum REGSTATE {
-        START,
-        WAITING,
-        FAILED,
-        END
-    }
 }

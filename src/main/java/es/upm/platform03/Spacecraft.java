@@ -13,11 +13,10 @@ import java.util.ArrayList;
  * Spacecraft agent. Handles the initialization of other agents of the platform.
  * Handles the following behaviors:
  * <br>
- *  - Company registration
+ * - Company registration
  */
 public class Spacecraft extends RFBAgent {
 
-    final static String pclNameRegistration = "Registration";
     ArrayList<AID> companies = new ArrayList<AID>();
     DateTime registrationDeadline;
     /**
@@ -27,51 +26,67 @@ public class Spacecraft extends RFBAgent {
     CyclicBehaviour registrationBehavior = new CyclicBehaviour() {
         @Override
         public void action() {
-            ACLMessage msg = receive(MessageTemplate.MatchProtocol(pclNameRegistration));
+            //jade sometimes fires messages on nulls. cool.
+            ACLMessage msg = receive();
             if (msg == null) {
                 block();
                 return;
             }
-            if (msg.getPerformative() == ACLMessage.REQUEST) {
-                ACLMessage reply = msg.createReply();
-                System.out.printf("%s: got new reg request from %s for '%s'%n",
-                        getLocalName(), msg.getSender().getLocalName(), msg.getContent());
-                if (registrationDeadline.isBeforeNow()) {
-                    reply.setPerformative(ACLMessage.REFUSE);
-                    send(reply);
-                    return;
-                }
-                reply.setPerformative(ACLMessage.AGREE);
-                send(reply);
+            /*
+            extensive template. you should only ever need to change the
+            protocol and the performative
+             */
+            MessageTemplate mtAll =
+                    MessageTemplate.and(mtOntoAndCodec,
+                            MessageTemplate.and(
+                                    MessageTemplate.MatchProtocol(ontology.PROTOCOL_REGISTRATION),
+                                    MessageTemplate.MatchPerformative(ACLMessage.REQUEST)
+                            )
+                    );
 
-                ACLMessage replyInform = msg.createReply();
-                AID senderID = msg.getSender();
-
-                if (companies.contains(senderID)) {
-                    replyInform.setPerformative(ACLMessage.FAILURE);
-                } else {
-                    System.out.printf("%s: team '%s' registered, informing...%n", getLocalName(), msg.getContent());
-                    companies.add(senderID);
-                    replyInform.setPerformative(ACLMessage.INFORM);
-                }
-
-                /*
-                    Artificial delay to account for other agents, since some of them
-                    manage to handle the AGREE message after the inform one.
-                 */
-                new java.util.Timer().schedule(
-                        new java.util.TimerTask() {
-                            @Override
-                            public void run() {
-                                send(replyInform);
-                            }
-                        },
-                        2000
-                );
-
-            } else {
+            if (!mtAll.match(msg)) {
                 replyWithNotUnderstood(msg);
+                block();
+                return;
             }
+            //TODO:code above will be redundant for many behaviors. consider extracting
+
+
+            ACLMessage reply = msg.createReply();
+            System.out.printf("%s: got new reg request from %s for '%s'%n",
+                    getLocalName(), msg.getSender().getLocalName(), msg.getContent());
+            if (registrationDeadline.isBeforeNow()) {
+                reply.setPerformative(ACLMessage.REFUSE);
+                send(reply);
+                return;
+            }
+            reply.setPerformative(ACLMessage.AGREE);
+            send(reply);
+
+            ACLMessage replyInform = msg.createReply();
+            AID senderID = msg.getSender();
+
+            if (companies.contains(senderID)) {
+                replyInform.setPerformative(ACLMessage.FAILURE);
+            } else {
+                System.out.printf("%s: team '%s' registered, informing...%n", getLocalName(), msg.getContent());
+                companies.add(senderID);
+                replyInform.setPerformative(ACLMessage.INFORM);
+            }
+
+            /*
+                Artificial delay to account for other agents, since some of them
+                manage to handle the AGREE message after the inform one.
+             */
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            send(replyInform);
+                        }
+                    },
+                    2000
+            );
         }
     };
 
@@ -87,7 +102,7 @@ public class Spacecraft extends RFBAgent {
         System.out.printf("%s: registration is up! Registration ends at %s%n",
                 getLocalName(), registrationDeadline.toString("HH:mm:ss"));
 
-        registerSelfWithServices(new String[]{"Registration"});
+        registerSelfWithServices(new String[]{ontology.PROTOCOL_REGISTRATION});
         super.setup();
     }
 }

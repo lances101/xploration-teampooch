@@ -32,7 +32,7 @@ repositories {
 
 dependencies {
     compile 'com.tilab.jade:jade:4.4.0'
-    compile 'com.github.kradalby:xploration-shared:master-SNAPSHOT'
+    compile 'com.github.kradalby:xploration-shared:0.0.8'
     compile 'joda-time:joda-time:2.9.3'
 
 }
