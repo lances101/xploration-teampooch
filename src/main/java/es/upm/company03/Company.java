@@ -137,7 +137,7 @@ public class Company extends RFBAgent {
                     RegistrationRequest regReq = new RegistrationRequest();
                     regReq.setCompany(companyName);
 
-                    getContentManager().fillContent(message, regReq);
+                    getContentManager().fillContent(message, new Action(getAID(), regReq));
 
                     send(message);
                     System.out.printf("%s: requesting registration from Spacecraft%n",

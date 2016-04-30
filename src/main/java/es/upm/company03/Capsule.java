@@ -20,7 +20,7 @@ public class Capsule extends RFBAgent {
             logger.log(Level.SEVERE, "Tried to instantiate Capsule without location.");
             return;
         }
-        System.out.printf("%s: dropped at %d,%d", getLocalName(), location.getX(), location.getY());
+        System.out.printf("%s: dropped at %d,%d%n", getLocalName(), location.getX(), location.getY());
         try {
             AgentController ac = getContainerController().createNewAgent("Rover03", "es.upm.company03.Rover", new Object[]{location});
             ac.start();

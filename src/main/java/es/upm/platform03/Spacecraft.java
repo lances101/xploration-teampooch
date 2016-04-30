@@ -1,7 +1,9 @@
 package es.upm.platform03;
 
+import es.upm.company03.common.CompanyAIDTuple;
 import es.upm.company03.common.RFBAgent;
 import es.upm.ontology.Location;
+import es.upm.ontology.RegistrationRequest;
 import es.upm.ontology.ReleaseCapsule;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -24,7 +26,7 @@ import java.util.Random;
  */
 public class Spacecraft extends RFBAgent {
 
-    ArrayList<AID> companies = new ArrayList<AID>();
+    ArrayList<CompanyAIDTuple> companies = new ArrayList<CompanyAIDTuple>();
     long registrationPeriodTicks = 10000;
     DateTime registrationDeadline;
     /**
@@ -59,10 +61,9 @@ public class Spacecraft extends RFBAgent {
             }
             //TODO:code above will be redundant for many behaviors. consider extracting
 
-
             ACLMessage reply = msg.createReply();
-            System.out.printf("%s: got new reg request from %s for '%s'%n",
-                    getLocalName(), msg.getSender().getLocalName(), msg.getContent());
+            System.out.printf("%s: got new reg request from %s%n",
+                    getLocalName(), msg.getSender().getLocalName());
             if (registrationDeadline.isBeforeNow()) {
                 reply.setPerformative(ACLMessage.REFUSE);
                 send(reply);
@@ -74,13 +75,24 @@ public class Spacecraft extends RFBAgent {
             ACLMessage replyInform = msg.createReply();
             AID senderID = msg.getSender();
 
-            if (companies.contains(senderID)) {
-                replyInform.setPerformative(ACLMessage.FAILURE);
-            } else {
-                System.out.printf("%s: team '%s' registered, informing...%n", getLocalName(), msg.getContent());
-                companies.add(senderID);
-                replyInform.setPerformative(ACLMessage.INFORM);
+            try {
+                Action ac = (Action) getContentManager().extractContent(msg);
+                RegistrationRequest regReq = (RegistrationRequest) ac.getAction();
+
+                if (companies.stream().anyMatch(companyTuple -> companyTuple.getCompany() == senderID)) {
+                    replyInform.setPerformative(ACLMessage.FAILURE);
+                } else {
+                    companies.add(new CompanyAIDTuple(regReq.getCompany(), msg.getSender()));
+                    System.out.printf("%s: team '%s' registered, informing...%n", getLocalName(), regReq.getCompany());
+                    replyInform.setPerformative(ACLMessage.INFORM);
+                }
+
+            } catch (Codec.CodecException e) {
+                e.printStackTrace();
+            } catch (OntologyException e) {
+                e.printStackTrace();
             }
+
 
             /*
                 Artificial delay to account for other agents, since some of them
@@ -100,14 +112,14 @@ public class Spacecraft extends RFBAgent {
     WakerBehaviour releaseCapsuleBehavior = new WakerBehaviour(null, registrationPeriodTicks) {
         @Override
         protected void onWake() {
-            System.out.printf("%s: sending ReleaseCapsule to %d companies",
+            System.out.printf("%s: sending ReleaseCapsule to %d companies%n",
                     getLocalName(), companies.size());
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setOntology(ontology.getName());
             msg.setLanguage(codec.getName());
             msg.setProtocol(ontology.PROTOCOL_RELEASE_CAPSULE);
-            for (AID comp : companies)
-                msg.addReceiver(comp);
+            for (CompanyAIDTuple tuple : companies)
+                msg.addReceiver(tuple.getCompany());
 
             //TODO: calculate real position. for now - random
             Random rnd = new Random();
