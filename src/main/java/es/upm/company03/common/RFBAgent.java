@@ -11,6 +11,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.util.Logger;
 
 /**
  *  RFB agent does not have much for itself, it inherits Agent.
@@ -19,6 +20,7 @@ import jade.lang.acl.MessageTemplate;
  */
 public abstract class RFBAgent extends Agent {
 
+    protected Logger logger = Logger.getJADELogger(this.getClass().getName());
     protected Codec codec = new SLCodec();
     protected XplorationOntology ontology = (XplorationOntology) XplorationOntology.getInstance();
     protected MessageTemplate mtOntoAndCodec = MessageTemplate.and(MessageTemplate.MatchOntology(ontology.getName()), MessageTemplate.MatchLanguage(codec.getName()));

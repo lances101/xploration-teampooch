@@ -1,13 +1,20 @@
 package es.upm.platform03;
 
 import es.upm.company03.common.RFBAgent;
+import es.upm.ontology.Location;
+import es.upm.ontology.ReleaseCapsule;
+import jade.content.lang.Codec;
+import jade.content.onto.OntologyException;
+import jade.content.onto.basic.Action;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.WakerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Spacecraft agent. Handles the initialization of other agents of the platform.
@@ -18,6 +25,7 @@ import java.util.ArrayList;
 public class Spacecraft extends RFBAgent {
 
     ArrayList<AID> companies = new ArrayList<AID>();
+    long registrationPeriodTicks = 10000;
     DateTime registrationDeadline;
     /**
      * Handles the registration.
@@ -89,20 +97,56 @@ public class Spacecraft extends RFBAgent {
             );
         }
     };
+    WakerBehaviour releaseCapsuleBehavior = new WakerBehaviour(null, registrationPeriodTicks) {
+        @Override
+        protected void onWake() {
+            System.out.printf("%s: sending ReleaseCapsule to %d companies",
+                    getLocalName(), companies.size());
+            ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+            msg.setOntology(ontology.getName());
+            msg.setLanguage(codec.getName());
+            msg.setProtocol(ontology.PROTOCOL_RELEASE_CAPSULE);
+            for (AID comp : companies)
+                msg.addReceiver(comp);
+
+            //TODO: calculate real position. for now - random
+            Random rnd = new Random();
+
+            ReleaseCapsule releaseCapsule = new ReleaseCapsule();
+            Location location = new Location();
+            location.setX(rnd.nextInt(100));
+            location.setY(rnd.nextInt(100));
+            releaseCapsule.setLocation(location);
+            try {
+                getContentManager().fillContent(msg, new Action(getAID(), releaseCapsule));
+                send(msg);
+            } catch (Codec.CodecException e) {
+                e.printStackTrace();
+            } catch (OntologyException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     @Override
     protected void setup() {
-        System.out.printf("%s is starting up!%n", "Spacecraft03");
+        System.out.printf("%s is starting up!%n", getLocalName());
 
         //See comment in Company.java
         registrationBehavior.setAgent(this);
         addBehaviour(registrationBehavior);
 
-        registrationDeadline = DateTime.now().plusSeconds(60);
+        releaseCapsuleBehavior.setAgent(this);
+        releaseCapsuleBehavior.restart();
+        addBehaviour(releaseCapsuleBehavior);
+
+        registrationDeadline = DateTime.now().plusSeconds(10);
         System.out.printf("%s: registration is up! Registration ends at %s%n",
                 getLocalName(), registrationDeadline.toString("HH:mm:ss"));
 
         registerSelfWithServices(new String[]{ontology.PROTOCOL_REGISTRATION});
         super.setup();
     }
+
+
 }

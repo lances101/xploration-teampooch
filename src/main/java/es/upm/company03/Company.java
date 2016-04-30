@@ -2,8 +2,10 @@ package es.upm.company03;
 
 import es.upm.company03.common.RFBAgent;
 import es.upm.ontology.RegistrationRequest;
+import es.upm.ontology.ReleaseCapsule;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
+import jade.content.onto.basic.Action;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -11,6 +13,8 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.wrapper.AgentController;
+import jade.wrapper.StaleProxyException;
 
 
 /**
@@ -22,37 +26,53 @@ import jade.lang.acl.MessageTemplate;
 public class Company extends RFBAgent {
 
 
-    final static String companyName = "Company03";
+    final static String companySuffix = "03";
+    SimpleBehaviour releaseCapsuleBehavior = new SimpleBehaviour() {
+        boolean capsuleReleased = false;
 
-    @Override
-    protected void setup() {
-        System.out.printf("%s is starting up!%n", companyName);
+        @Override
+        public void action() {
+            ACLMessage msg = receive();
+            if (msg == null) {
+                block();
+                return;
+            }
+            MessageTemplate mtAll =
+                    MessageTemplate.and(mtOntoAndCodec,
+                            MessageTemplate.and(
+                                    MessageTemplate.MatchProtocol(ontology.PROTOCOL_RELEASE_CAPSULE),
+                                    MessageTemplate.MatchPerformative(ACLMessage.INFORM)
+                            )
+                    );
+            if (!mtAll.match(msg)) {
+                replyWithNotUnderstood(msg);
+                block();
+                return;
+            }
+            try {
+                Action ce = (Action) getContentManager().extractContent(msg);
+                ReleaseCapsule releaseCap = (ReleaseCapsule) ce.getAction();
+                AgentController ac = myAgent.getContainerController().createNewAgent("Capsule" + companySuffix, "es.upm.company03.Capsule", new Object[]{releaseCap.getLocation(),});
+                ac.start();
+                capsuleReleased = true;
+                System.out.printf("%s: Capsule released!%n", getLocalName());
 
-        //We define the behaviours outside and then add them.
-        //Helps to keep the code more structurized and we can
-        //do shit like moving the registration in the DFService
-        //after adding the behaviors without much hassle.
-        //TODO: remove this comment by 02/05/2016
-        registrationBehavior.setAgent(this);
-        addBehaviour(registrationBehavior);
 
-        registerSelfWithServices(new String[]{"Company"});
-        super.setup();
+            } catch (Codec.CodecException e) {
+                e.printStackTrace();
+            } catch (OntologyException e) {
+                e.printStackTrace();
+            } catch (StaleProxyException e) {
+                e.printStackTrace();
+            }
 
+        }
 
-    }
-
-    /**
-     * States for registration behavior.
-     * Here because inner classes cannot have
-     * static declarations.
-     */
-    enum REGSTATE {
-        START,
-        WAITING,
-        FAILED,
-        END
-    }
+        @Override
+        public boolean done() {
+            return capsuleReleased;
+        }
+    };
     /**
      * Registation behavior with States.
      * Ends if succeeds and tries 3 times if it fails.
@@ -60,6 +80,7 @@ public class Company extends RFBAgent {
     SimpleBehaviour registrationBehavior = new SimpleBehaviour() {
 
         final static int maxRegTries = 3;
+        final static String companyName = "Company" + companySuffix;
         REGSTATE regState = REGSTATE.START;
         int regTries = 0;
 
@@ -116,7 +137,7 @@ public class Company extends RFBAgent {
                     RegistrationRequest regReq = new RegistrationRequest();
                     regReq.setCompany(companyName);
 
-                    getContentManager().fillContent(message,  regReq);
+                    getContentManager().fillContent(message, regReq);
 
                     send(message);
                     System.out.printf("%s: requesting registration from Spacecraft%n",
@@ -165,6 +186,8 @@ public class Company extends RFBAgent {
                     System.out.printf("%s: Spacecraft sent 'INFORM'. We are registered!%n",
                             getLocalName());
                     regState = REGSTATE.END;
+                    //TODO: handle this with an FSM
+                    addBehaviour(releaseCapsuleBehavior);
                     break;
                 default:
                     replyWithNotUnderstood(msg);
@@ -172,4 +195,36 @@ public class Company extends RFBAgent {
             }
         }
     };
+
+    @Override
+    protected void setup() {
+        System.out.printf("%s is starting up!%n", "Company" + companySuffix);
+
+        //We define the behaviours outside and then add them.
+        //Helps to keep the code more structurized and we can
+        //do shit like moving the registration in the DFService
+        //after adding the behaviors without much hassle.
+        //TODO: remove this comment by 02/05/2016
+        registrationBehavior.setAgent(this);
+        addBehaviour(registrationBehavior);
+
+        releaseCapsuleBehavior.setAgent(this);
+
+        registerSelfWithServices(new String[]{"Company"});
+        super.setup();
+
+
+    }
+
+    /**
+     * States for registration behavior.
+     * Here because inner classes cannot have
+     * static declarations.
+     */
+    enum REGSTATE {
+        START,
+        WAITING,
+        FAILED,
+        END
+    }
 }
