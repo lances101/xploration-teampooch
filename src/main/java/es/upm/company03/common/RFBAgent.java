@@ -17,7 +17,7 @@ import jade.lang.acl.MessageTemplate;
  *  It implements a behavior that handles not_understood messages
  *  It has a couple of helper methods, but that's about it.
  */
-public class RFBAgent extends Agent{
+public abstract class RFBAgent extends Agent {
 
     protected Codec codec = new SLCodec();
     protected XplorationOntology ontology = (XplorationOntology) XplorationOntology.getInstance();
