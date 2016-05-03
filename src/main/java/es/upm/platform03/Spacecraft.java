@@ -156,7 +156,7 @@ public class Spacecraft extends RFBAgent {
         System.out.printf("%s: registration is up! Registration ends at %s%n",
                 getLocalName(), registrationDeadline.toString("HH:mm:ss"));
 
-        registerSelfWithServices(new String[]{ontology.PROTOCOL_REGISTRATION});
+        registerSelfWithServices(new String[]{"Spacecraft"});
         super.setup();
     }
 

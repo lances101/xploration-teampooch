@@ -110,9 +110,10 @@ public class Company extends RFBAgent {
         }
 
         void Register() {
+
             DFAgentDescription dfd = new DFAgentDescription();
             ServiceDescription sd = new ServiceDescription();
-            sd.setType(ontology.PROTOCOL_REGISTRATION);
+            sd.setType("Spacecraft");
             dfd.addServices(sd);
 
             DFAgentDescription[] found;
@@ -210,7 +211,7 @@ public class Company extends RFBAgent {
 
         releaseCapsuleBehavior.setAgent(this);
 
-        registerSelfWithServices(new String[]{"Company"});
+        registerSelfWithServices(new String[]{"Company03"});
         super.setup();
 
 
