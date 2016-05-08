@@ -25,6 +25,22 @@ public abstract class RFBAgent extends Agent {
     protected XplorationOntology ontology = (XplorationOntology) XplorationOntology.getInstance();
     protected MessageTemplate mtOntoAndCodec = MessageTemplate.and(MessageTemplate.MatchOntology(ontology.getName()), MessageTemplate.MatchLanguage(codec.getName()));
 
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public Codec getCodec() {
+        return codec;
+    }
+
+    public XplorationOntology getOntology() {
+        return ontology;
+    }
+
+    public MessageTemplate getMtOntoAndCodec() {
+        return mtOntoAndCodec;
+    }
+
     /**
      * Simple behaviors that catches NOT_UNDERSTOOD's and outputs them to console.
      */
@@ -78,7 +94,7 @@ public abstract class RFBAgent extends Agent {
      * other behaviors.
      * @param msg the ACLMessage received
      */
-    protected void replyWithNotUnderstood(ACLMessage msg)
+    public void replyWithNotUnderstood(ACLMessage msg)
     {
         ACLMessage reply = msg.createReply();
         reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
