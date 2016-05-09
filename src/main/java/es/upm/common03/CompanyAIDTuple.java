@@ -1,4 +1,4 @@
-package es.upm.company03.common;
+package es.upm.common03;
 
 import jade.core.AID;
 

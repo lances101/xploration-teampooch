@@ -1,5 +1,6 @@
-package es.upm.company03.common;
+package es.upm.common03;
 
+import es.upm.common03.ontology.RFBOntology;
 import es.upm.ontology.XplorationOntology;
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
@@ -20,10 +21,13 @@ import jade.util.Logger;
  */
 public abstract class RFBAgent extends Agent {
 
+    public static String getTeamPrefix(){return "03";};
     protected Logger logger = Logger.getJADELogger(this.getClass().getName());
     protected Codec codec = new SLCodec();
-    protected XplorationOntology ontology = (XplorationOntology) XplorationOntology.getInstance();
-    protected MessageTemplate mtOntoAndCodec = MessageTemplate.and(MessageTemplate.MatchOntology(ontology.getName()), MessageTemplate.MatchLanguage(codec.getName()));
+    protected XplorationOntology xOntology = (XplorationOntology) XplorationOntology.getInstance();
+    protected RFBOntology rfbOntology = (RFBOntology) RFBOntology.getInstance();
+
+    protected MessageTemplate mtOntoAndCodec = MessageTemplate.and(MessageTemplate.or(MessageTemplate.MatchOntology(xOntology.getName()), MessageTemplate.MatchOntology(rfbOntology.getName())), MessageTemplate.MatchLanguage(codec.getName()));
 
     public Logger getLogger() {
         return logger;
@@ -33,9 +37,11 @@ public abstract class RFBAgent extends Agent {
         return codec;
     }
 
-    public XplorationOntology getOntology() {
-        return ontology;
+    public XplorationOntology getxOntology() {
+        return xOntology;
     }
+
+    public RFBOntology getRFBOntology() { return rfbOntology; }
 
     public MessageTemplate getMtOntoAndCodec() {
         return mtOntoAndCodec;
@@ -61,7 +67,8 @@ public abstract class RFBAgent extends Agent {
     @Override
     protected void setup() {
         getContentManager().registerLanguage(codec);
-        getContentManager().registerOntology(ontology);
+        getContentManager().registerOntology(xOntology);
+        getContentManager().registerOntology(rfbOntology);
         addBehaviour(NotUnderStoodBehavior);
     }
 

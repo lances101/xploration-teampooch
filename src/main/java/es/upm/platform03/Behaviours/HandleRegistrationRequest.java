@@ -1,7 +1,7 @@
 package es.upm.platform03.behaviours;
 
-import es.upm.company03.common.CompanyAIDTuple;
-import es.upm.company03.common.RFBAgent;
+import es.upm.common03.CompanyAIDTuple;
+import es.upm.common03.RFBAgent;
 import es.upm.ontology.RegistrationRequest;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -17,46 +17,36 @@ import java.util.ArrayList;
 /**
  * Created by borismakogonyuk on 08.05.16.
  */
-public class RegistrationBehavior extends CyclicBehaviour {
+public class HandleRegistrationRequest extends CyclicBehaviour {
 
     RFBAgent agent;
     DateTime registrationDeadline;
     ArrayList<CompanyAIDTuple> companies;
 
-    public RegistrationBehavior(RFBAgent agent, int registrationSeconds, ArrayList<CompanyAIDTuple> companies) {
+    public HandleRegistrationRequest(RFBAgent agent, int registrationSeconds, ArrayList<CompanyAIDTuple> companies) {
         super(agent);
         this.agent = agent;
         this.registrationDeadline = DateTime.now().plusSeconds(registrationSeconds);
         this.companies = companies;
     }
 
+    MessageTemplate matchRegRequest;
     @Override
     public void action() {
-        //jade sometimes fires messages on nulls. cool.
-        ACLMessage msg = myAgent.receive();
+        if(matchRegRequest == null) {
+            matchRegRequest =
+                    MessageTemplate.and(agent.getMtOntoAndCodec(),
+                            MessageTemplate.and(
+                                    MessageTemplate.MatchProtocol(agent.getxOntology().PROTOCOL_REGISTRATION),
+                                    MessageTemplate.MatchPerformative(ACLMessage.REQUEST)
+                            )
+                    );
+        }
+        ACLMessage msg = agent.receive(matchRegRequest);
         if (msg == null) {
             block();
             return;
         }
-            /*
-            extensive template. you should only ever need to change the
-            protocol and the performative
-             */
-        MessageTemplate mtAll =
-                MessageTemplate.and(agent.getMtOntoAndCodec(),
-                        MessageTemplate.and(
-                                MessageTemplate.MatchProtocol(agent.getOntology().PROTOCOL_REGISTRATION),
-                                MessageTemplate.MatchPerformative(ACLMessage.REQUEST)
-                        )
-                );
-
-        if (!mtAll.match(msg)) {
-            agent.replyWithNotUnderstood(msg);
-            block();
-            return;
-        }
-        //TODO:code above will be redundant for many behaviors. consider extracting
-
         ACLMessage reply = msg.createReply();
         System.out.printf("%s: got new reg request from %s%n",
                 agent.getLocalName(), msg.getSender().getLocalName());

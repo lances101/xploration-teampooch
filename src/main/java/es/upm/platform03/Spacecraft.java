@@ -1,10 +1,12 @@
-package es.upm.platform03;
+package es.upm;
 
-import es.upm.company03.common.CompanyAIDTuple;
-import es.upm.company03.common.RFBAgent;
-import es.upm.platform03.behaviours.RegistrationBehavior;
-import es.upm.platform03.behaviours.ReleaseCapsuleBehavior;
-import org.joda.time.DateTime;
+import es.upm.common03.CompanyAIDTuple;
+import es.upm.common03.RFBAgent;
+import es.upm.platform03.behaviours.HandleRegistrationRequest;
+import es.upm.platform03.behaviours.HandleReleaseCapsule;
+import jade.wrapper.AgentController;
+import jade.wrapper.ContainerController;
+import jade.wrapper.StaleProxyException;
 
 import java.util.ArrayList;
 
@@ -18,7 +20,6 @@ public class Spacecraft extends RFBAgent {
 
     ArrayList<CompanyAIDTuple> companies = new ArrayList<CompanyAIDTuple>();
     int registrationPeriodSeconds = 10;
-    DateTime registrationDeadline;
 
 
     @Override
@@ -26,15 +27,29 @@ public class Spacecraft extends RFBAgent {
         System.out.printf("%s is starting up!%n", getLocalName());
 
         //See comment in Company.java
-        addBehaviour(new RegistrationBehavior(this, registrationPeriodSeconds, companies));
-        addBehaviour(new ReleaseCapsuleBehavior(this, registrationPeriodSeconds, companies));
+        addBehaviour(new HandleRegistrationRequest(this, registrationPeriodSeconds, companies));
+        addBehaviour(new HandleReleaseCapsule(this, registrationPeriodSeconds, companies));
 
-        registrationDeadline = DateTime.now().plusSeconds(10);
-        System.out.printf("%s: registration is up! Registration ends at %s%n",
-                getLocalName(), registrationDeadline.toString("HH:mm:ss"));
+        System.out.printf("%s: registration is up! Ends in %s seconds%n",
+                getLocalName(), registrationPeriodSeconds);
 
         registerSelfWithServices(new String[]{"Spacecraft"});
         super.setup();
+        createAndWakeupPlatform();
+    }
+
+    void createAndWakeupPlatform()
+    {
+        ContainerController container = getContainerController();
+        try {
+            AgentController agWorld = container.createNewAgent("World", "es.upm.platform03.World", null);
+            agWorld.start();
+            AgentController agMap = container.createNewAgent("Map", "es.upm.platform03.Map", null);
+            agMap.start();
+
+        } catch (StaleProxyException e) {
+            e.printStackTrace();
+        }
     }
 
 

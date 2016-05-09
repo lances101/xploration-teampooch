@@ -1,6 +1,6 @@
 package es.upm.company03;
 
-import es.upm.company03.common.RFBAgent;
+import es.upm.common03.RFBAgent;
 import es.upm.ontology.Location;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;

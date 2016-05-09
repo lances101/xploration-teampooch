@@ -1,7 +1,7 @@
 package es.upm.platform03.behaviours;
 
-import es.upm.company03.common.CompanyAIDTuple;
-import es.upm.company03.common.RFBAgent;
+import es.upm.common03.CompanyAIDTuple;
+import es.upm.common03.RFBAgent;
 import es.upm.ontology.Location;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -13,12 +13,12 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class ReleaseCapsuleBehavior extends WakerBehaviour {
+public class HandleReleaseCapsule extends WakerBehaviour {
 
     RFBAgent agent;
     ArrayList<CompanyAIDTuple> companies;
 
-    public ReleaseCapsuleBehavior(RFBAgent a, long timeout, ArrayList<CompanyAIDTuple> companies) {
+    public HandleReleaseCapsule(RFBAgent a, long timeout, ArrayList<CompanyAIDTuple> companies) {
         super(a, timeout * 1000);
         this.agent = a;
         this.companies = companies;
@@ -29,9 +29,9 @@ public class ReleaseCapsuleBehavior extends WakerBehaviour {
         System.out.printf("%s: sending ReleaseCapsuleBehavior to %d companies%n",
                 agent.getLocalName(), companies.size());
         ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-        msg.setOntology(agent.getOntology().getName());
+        msg.setOntology(agent.getxOntology().getName());
         msg.setLanguage(agent.getCodec().getName());
-        msg.setProtocol(agent.getOntology().PROTOCOL_RELEASE_CAPSULE);
+        msg.setProtocol(agent.getxOntology().PROTOCOL_RELEASE_CAPSULE);
         for (CompanyAIDTuple tuple : companies)
             msg.addReceiver(tuple.getCompany());
 
