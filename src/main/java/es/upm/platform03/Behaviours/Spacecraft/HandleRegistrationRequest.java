@@ -1,4 +1,4 @@
-package es.upm.platform03.behaviours;
+package es.upm.platform03.behaviours.Spacecraft;
 
 import es.upm.common03.CompanyAIDTuple;
 import es.upm.common03.RFBAgent;

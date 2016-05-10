@@ -1,9 +1,9 @@
-package es.upm;
+package es.upm.platform03;
 
 import es.upm.common03.CompanyAIDTuple;
 import es.upm.common03.RFBAgent;
-import es.upm.platform03.behaviours.HandleRegistrationRequest;
-import es.upm.platform03.behaviours.HandleReleaseCapsule;
+import es.upm.platform03.behaviours.Spacecraft.HandleRegistrationRequest;
+import es.upm.platform03.behaviours.Spacecraft.HandleReleaseCapsule;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
