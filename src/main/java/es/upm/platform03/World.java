@@ -1,6 +1,5 @@
 package es.upm.platform03;
 
-import com.sun.tools.javac.util.Pair;
 import es.upm.common03.RFBAgent;
 import es.upm.platform03.behaviours.World.HandleRoverMovementReply;
 import es.upm.platform03.behaviours.World.HandleRoverMovementRequest;
@@ -11,6 +10,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import javafx.util.Pair;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;

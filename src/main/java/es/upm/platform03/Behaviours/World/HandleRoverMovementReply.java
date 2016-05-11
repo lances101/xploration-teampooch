@@ -1,10 +1,10 @@
 package es.upm.platform03.behaviours.World;
 
-import com.sun.tools.javac.util.Pair;
 import es.upm.platform03.World;
 import jade.core.AID;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
+import javafx.util.Pair;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class HandleRoverMovementReply extends TickerBehaviour {
     AID mapAID;
     World agent;
+
     ArrayList<Pair<ACLMessage, DateTime>> moveConvo;
     public HandleRoverMovementReply(World a, long period, AID mapAID, ArrayList<Pair<ACLMessage, DateTime>> moveConvo) {
         super(a, period);
@@ -28,8 +29,8 @@ public class HandleRoverMovementReply extends TickerBehaviour {
     protected void onTick() {
         for(int i = 0; i < moveConvo.size(); i++)
         {
-            if(moveConvo.get(i).snd.isAfterNow()) continue;
-            ACLMessage msg = moveConvo.get(i).fst;
+            if(moveConvo.get(i).getValue().isAfterNow()) continue;
+            ACLMessage msg = moveConvo.get(i).getKey();
             ACLMessage reply = msg.createReply();
             reply.setPerformative(ACLMessage.INFORM);
             agent.send(reply);

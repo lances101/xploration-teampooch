@@ -79,8 +79,6 @@ public class Rover extends RFBAgent {
             message.setLanguage(codec.getName());
             message.addReceiver(world);
             if(dir == RFBConstants.Direction.CANCEL){
-                System.out.printf("%s:  gonna be a cancel! %d %n",
-                        getLocalName(), dir);
                 message.setPerformative(ACLMessage.CANCEL);
             }
             else {

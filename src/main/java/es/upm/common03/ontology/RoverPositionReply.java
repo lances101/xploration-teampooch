@@ -1,12 +1,14 @@
 package es.upm.common03.ontology;
 
 
-import jade.content.AgentAction;
+import jade.content.*;
+import jade.util.leap.*;
+import jade.core.*;
 
 /**
 * Protege name: RoverPositionReply
 * @author ontology bean generator
-* @version 2016/05/8, 21:09:33
+* @version 2016/05/10, 17:47:14
 */
 public class RoverPositionReply implements AgentAction {
 
@@ -20,6 +22,5 @@ public class RoverPositionReply implements AgentAction {
    public Location getRoverPosition() {
      return this.roverPosition;
    }
-
 
 }

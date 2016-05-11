@@ -1,6 +1,5 @@
 package es.upm.platform03.behaviours.World;
 
-import com.sun.tools.javac.util.Pair;
 import es.upm.ontology.RequestRoverMovement;
 import es.upm.platform03.World;
 import jade.content.lang.Codec;
@@ -9,6 +8,7 @@ import jade.content.onto.basic.Action;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import javafx.util.Pair;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class HandleRoverMovementRequest extends CyclicBehaviour {
 
         switch (msg.getPerformative()) {
             case ACLMessage.REQUEST:
-                if (moveConvo.stream().anyMatch(c -> c.fst.getSender() == msg.getSender())) {
+                if (moveConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender())) {
                     System.out.println("Sending REFUSE to rover");
                     ACLMessage reply = msg.createReply();
                     reply.setPerformative(ACLMessage.REFUSE);
@@ -62,22 +62,21 @@ public class HandleRoverMovementRequest extends CyclicBehaviour {
 
                 break;
             case ACLMessage.CANCEL:
-                System.out.println("Got a cancel");
                 for (int i = 0; i < moveConvo.size(); i++) {
-                    ACLMessage convoMsg = moveConvo.get(i).fst;
+                    ACLMessage convoMsg = moveConvo.get(i).getKey();
                     if (convoMsg.getSender().equals(msg.getSender())) {
                         if (msg.getConversationId() != null) {
                             //Rover sent specific convo id, searching for it then
                             if(convoMsg != null && msg.getConversationId().equalsIgnoreCase(convoMsg.getConversationId())){
                                 moveConvo.remove(i);
                                 i--;
-                                System.out.println("Got cancel. Found rover. Cancelled.");
+                                System.out.println("Got cancel. Found rover. Found convo. Cancelled.");
                             }
                         }
                         else{
                             moveConvo.remove(i);
                             i--;
-                            System.out.println("Got cancel. Found rover. Cancelled.");
+                            System.out.println("Got cancel. Found rover. NO convo. Still Cancelled.");
                         }
                     }
                 }

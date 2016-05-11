@@ -8,7 +8,7 @@ import jade.core.*;
 /**
 * Protege name: Location
 * @author ontology bean generator
-* @version 2016/05/8, 21:09:33
+* @version 2016/05/10, 17:47:14
 */
 public class Location implements Concept {
 

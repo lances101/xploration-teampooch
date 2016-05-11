@@ -9,7 +9,7 @@ import jade.core.CaseInsensitiveString;
 
 /** file: RFBOntology.java
  * @author ontology bean generator
- * @version 2016/05/8, 21:09:33
+ * @version 2016/05/10, 17:47:14
  */
 public class RFBOntology extends jade.content.onto.Ontology  {
   //NAME
@@ -29,6 +29,7 @@ public class RFBOntology extends jade.content.onto.Ontology  {
     public static final String ROVERPOSITIONQUERY="RoverPositionQuery";
     public static final String PROTOCOL_GET_ROVER_POSITION="PROTOCOL_GET_ROVER_POSITION";
     public static final String PROTOCOL="PROTOCOL";
+    public static final String PROTOCOL_UPDATE_ROVER_POSITION="PROTOCOL_UPDATE_ROVER_POSITION";
     public static final String LOCATION_X="X";
     public static final String LOCATION_Y="Y";
     public static final String LOCATION="Location";
@@ -43,6 +44,8 @@ public class RFBOntology extends jade.content.onto.Ontology  {
     // adding Concept(s)
     ConceptSchema locationSchema = new ConceptSchema(LOCATION);
     add(locationSchema, es.upm.common03.ontology.Location.class);
+    ConceptSchema protocoL_updatE_roveR_positionSchema = new ConceptSchema(PROTOCOL_UPDATE_ROVER_POSITION);
+    add(protocoL_updatE_roveR_positionSchema, es.upm.common03.ontology.PROTOCOL_UPDATE_ROVER_POSITION.class);
     ConceptSchema protocolSchema = new ConceptSchema(PROTOCOL);
     add(protocolSchema, es.upm.common03.ontology.PROTOCOL.class);
     ConceptSchema protocoL_geT_roveR_positionSchema = new ConceptSchema(PROTOCOL_GET_ROVER_POSITION);
@@ -68,6 +71,7 @@ public class RFBOntology extends jade.content.onto.Ontology  {
     // adding name mappings
 
     // adding inheritance
+    protocoL_updatE_roveR_positionSchema.addSuperSchema(protocolSchema);
     protocoL_geT_roveR_positionSchema.addSuperSchema(protocolSchema);
 
    }catch (java.lang.Exception e) {e.printStackTrace();}
