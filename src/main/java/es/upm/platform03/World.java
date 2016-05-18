@@ -18,11 +18,13 @@ import java.util.ArrayList;
 
 public class World extends RFBAgent {
 
+    XplorationMap _map;
     ArrayList<Pair<ACLMessage, DateTime>> moveConvo = new ArrayList<>();
     @Override
     protected void setup() {
+
         System.out.printf("%s is starting up!%n", getLocalName());
-        registerSelfWithServices(new String[]{"World"});
+        registerSelfWithServices(new String[]{"World", "Proxy"});
         super.setup();
 
         try {
@@ -33,7 +35,6 @@ public class World extends RFBAgent {
             System.out.println("Could not find map. SUDOKU!");
             doDelete();
         }
-
     }
 
     AID findMapService() throws NotFoundException {
