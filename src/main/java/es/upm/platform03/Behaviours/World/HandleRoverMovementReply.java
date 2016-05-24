@@ -1,13 +1,13 @@
 package es.upm.platform03.behaviours.World;
 
-import es.upm.common03.ontology.Location;
+
+import es.upm.ontology.Location;
 import es.upm.ontology.RequestRoverMovement;
 import es.upm.platform03.World;
 import es.upm.platform03.XplorationMap;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
-import jade.core.AID;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import javafx.util.Pair;
@@ -19,14 +19,13 @@ import java.util.ArrayList;
  * Created by borismakogonyuk on 10.05.16.
  */
 public class HandleRoverMovementReply extends TickerBehaviour {
-    AID mapAID;
     World agent;
 
     ArrayList<Pair<ACLMessage, DateTime>> moveConvo;
-    public HandleRoverMovementReply(World a, long period, AID mapAID, ArrayList<Pair<ACLMessage, DateTime>> moveConvo) {
+
+    public HandleRoverMovementReply(World a, long period, ArrayList<Pair<ACLMessage, DateTime>> moveConvo) {
         super(a, period);
         this.agent = a;
-        this.mapAID = mapAID;
         this.moveConvo = moveConvo;
 
     }

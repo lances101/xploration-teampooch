@@ -2,6 +2,7 @@ package es.upm.company03;
 
 import es.upm.common03.RFBAgent;
 import es.upm.common03.RFBConstants;
+import es.upm.common03.ontology.InformAID;
 import es.upm.ontology.Direction;
 import es.upm.ontology.Location;
 import es.upm.ontology.RequestRoverMovement;
@@ -27,9 +28,11 @@ public class Rover extends RFBAgent {
 
     @Override
     protected void setup() {
+        AID companyAID = null;
         Object[] arguments = getArguments();
-        if (arguments.length >= 1 && arguments[0] != null) {
-            location = (arguments[0] instanceof Location ? (Location) arguments[0] : null);
+        if (arguments.length >= 2 && arguments[0] != null) {
+            companyAID = (arguments[0] instanceof AID ? (AID) arguments[0] : null);
+            location = (arguments[1] instanceof Location ? (Location) arguments[1] : null);
         }
         if (location == null) {
             logger.log(Level.SEVERE, "Tried to instantiate Rover without location.");
@@ -44,12 +47,39 @@ public class Rover extends RFBAgent {
             this.doDelete();
             return;
         }
+        InformCompany(companyAID);
+        super.setup();
+
 
         sendMovementMessage(RFBConstants.Direction.DOWN_LEFT);
         doWait(1000);
         sendMovementMessage(RFBConstants.Direction.CANCEL);
         doWait(2000);
         sendMovementMessage(RFBConstants.Direction.DOWN_RIGHT);
+        doWait(6000);
+        sendResourceMessage();
+
+
+    }
+
+    private void InformCompany(AID company) {
+        ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+        msg.setLanguage(codec.getName());
+        msg.setOntology(teamOntology.getName());
+        msg.setProtocol(teamOntology.PROTOCOL_INFORM_AID);
+        msg.addReceiver(company);
+        InformAID aid = new InformAID();
+        es.upm.common03.ontology.Capsule capsule = new es.upm.common03.ontology.Capsule();
+        capsule.setCapsule_agent(getAID());
+        aid.setSubject(capsule);
+        try {
+            getContentManager().fillContent(msg, new Action(getAID(), capsule));
+        } catch (Codec.CodecException e) {
+            e.printStackTrace();
+        } catch (OntologyException e) {
+            e.printStackTrace();
+        }
+        send(msg);
     }
     void findWorldService() throws NotFoundException {
         DFAgentDescription dfd = new DFAgentDescription();
@@ -96,6 +126,17 @@ public class Rover extends RFBAgent {
         } catch (OntologyException e) {
             e.printStackTrace();
         }
+    }
+
+    void sendResourceMessage() {
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        message.setProtocol(xOntology.PROTOCOL_ANALYZE_MINERAL);
+        message.setOntology(xOntology.getName());
+        message.setLanguage(codec.getName());
+        message.addReceiver(world);
+        send(message);
+        System.out.printf("%s: requesting analysis%n",
+                getLocalName());
     }
 
 }

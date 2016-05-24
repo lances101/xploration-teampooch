@@ -1,13 +1,23 @@
 package es.upm.platform03;
 
-import es.upm.common03.ontology.Location;
+import es.upm.ontology.Location;
 import jade.core.AID;
 
 import java.util.HashMap;
 
 public class XplorationMap {
-    private HashMap<AID, Location> rovers = new HashMap<AID, Location>();
     private static XplorationMap _instance;
+    private HashMap<AID, Location> rovers = new HashMap<AID, Location>();
+    private String[][] minerals;
+
+    public XplorationMap() {
+        minerals = new String[5][5];
+        for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 5; j++) {
+                minerals[i][j] = "A";
+            }
+    }
+
     public static void UpdatePosition(AID aid, Location location)
     {
         _instance.rovers.put(aid, location);
@@ -16,6 +26,10 @@ public class XplorationMap {
     public static Location GetPosition(AID aid)
     {
         return _instance.rovers.get(aid);
+    }
+
+    public static String GetMineralAtPosition(Location location) {
+        return _instance.minerals[location.getX()][location.getY()];
     }
 
 

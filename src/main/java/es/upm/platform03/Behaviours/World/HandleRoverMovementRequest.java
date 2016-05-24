@@ -18,28 +18,23 @@ public class HandleRoverMovementRequest extends CyclicBehaviour {
     int movementMillis = 3000;
     World agent;
     ArrayList<Pair<ACLMessage, DateTime>> moveConvo = new ArrayList<Pair<ACLMessage, DateTime>>();
+    MessageTemplate mtAll;
 
     public HandleRoverMovementRequest(World agent, ArrayList<Pair<ACLMessage, DateTime>> moveConvo) {
         super(agent);
         this.agent = agent;
         this.moveConvo = moveConvo;
+        mtAll = MessageTemplate.and(agent.getMtOntoAndCodec(),
+                MessageTemplate.MatchProtocol(agent.getxOntology().PROTOCOL_ROVER_MOVEMENT));
     }
 
     @Override
     public void action() {
-        ACLMessage msg = myAgent.receive();
+        ACLMessage msg = myAgent.receive(mtAll);
         if (msg == null) {
             block();
             return;
         }
-        MessageTemplate mtAll = MessageTemplate.and(agent.getMtOntoAndCodec(),
-                MessageTemplate.MatchProtocol(agent.getxOntology().PROTOCOL_ROVER_MOVEMENT));
-        if (!mtAll.match(msg)) {
-            agent.replyWithNotUnderstood(msg);
-            block();
-            return;
-        }
-
         switch (msg.getPerformative()) {
             case ACLMessage.REQUEST:
                 if (moveConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender())) {

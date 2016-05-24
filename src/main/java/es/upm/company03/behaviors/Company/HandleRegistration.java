@@ -1,4 +1,4 @@
-package es.upm.company03.behaviors;
+package es.upm.company03.behaviors.Company;
 
 import es.upm.common03.RFBAgent;
 import es.upm.ontology.RegistrationRequest;
@@ -18,17 +18,6 @@ import jade.lang.acl.MessageTemplate;
  */
 public class HandleRegistration extends SimpleBehaviour {
     /**
-     * States for registration behavior.
-     * Here because inner classes cannot have
-     * static declarations.
-     */
-    enum REGSTATE {
-        START,
-        WAITING,
-        FAILED,
-        END
-    }
-    /**
      * Registation behavior with States.
      * Ends if succeeds and tries 3 times if it fails.
      */
@@ -37,6 +26,7 @@ public class HandleRegistration extends SimpleBehaviour {
     REGSTATE regState = REGSTATE.START;
     int regTries = 0;
     RFBAgent agent;
+    MessageTemplate matchReplies;
 
     public HandleRegistration(RFBAgent agent) {
         super(agent);
@@ -119,7 +109,6 @@ public class HandleRegistration extends SimpleBehaviour {
         }
     }
 
-    MessageTemplate matchReplies;
     void HandleMessages() {
         if(matchReplies == null)
         {
@@ -155,6 +144,18 @@ public class HandleRegistration extends SimpleBehaviour {
                 agent.replyWithNotUnderstood(msg);
                 break;
         }
+    }
+
+    /**
+     * States for registration behavior.
+     * Here because inner classes cannot have
+     * static declarations.
+     */
+    enum REGSTATE {
+        START,
+        WAITING,
+        FAILED,
+        END
     }
 
 }

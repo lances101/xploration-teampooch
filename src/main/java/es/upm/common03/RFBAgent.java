@@ -1,6 +1,6 @@
 package es.upm.common03;
 
-import es.upm.common03.ontology.RFBOntology;
+import es.upm.common03.ontology.Team03Ontology;
 import es.upm.ontology.XplorationOntology;
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
@@ -21,32 +21,12 @@ import jade.util.Logger;
  */
 public abstract class RFBAgent extends Agent {
 
-    public static String getTeamPrefix(){return "03";};
     protected Logger logger = Logger.getJADELogger(this.getClass().getName());
+    ;
     protected Codec codec = new SLCodec();
     protected XplorationOntology xOntology = (XplorationOntology) XplorationOntology.getInstance();
-    protected RFBOntology rfbOntology = (RFBOntology) RFBOntology.getInstance();
-
-    protected MessageTemplate mtOntoAndCodec = MessageTemplate.and(MessageTemplate.or(MessageTemplate.MatchOntology(xOntology.getName()), MessageTemplate.MatchOntology(rfbOntology.getName())), MessageTemplate.MatchLanguage(codec.getName()));
-
-    public Logger getLogger() {
-        return logger;
-    }
-
-    public Codec getCodec() {
-        return codec;
-    }
-
-    public XplorationOntology getxOntology() {
-        return xOntology;
-    }
-
-    public RFBOntology getRFBOntology() { return rfbOntology; }
-
-    public MessageTemplate getMtOntoAndCodec() {
-        return mtOntoAndCodec;
-    }
-
+    protected Team03Ontology teamOntology = (Team03Ontology) Team03Ontology.getInstance();
+    protected MessageTemplate mtOntoAndCodec = MessageTemplate.and(MessageTemplate.or(MessageTemplate.MatchOntology(xOntology.getName()), MessageTemplate.MatchOntology(teamOntology.getName())), MessageTemplate.MatchLanguage(codec.getName()));
     /**
      * Simple behaviors that catches NOT_UNDERSTOOD's and outputs them to console.
      */
@@ -61,6 +41,30 @@ public abstract class RFBAgent extends Agent {
         }
     };
 
+    public static String getTeamPrefix() {
+        return "03";
+    }
+
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public Codec getCodec() {
+        return codec;
+    }
+
+    public XplorationOntology getxOntology() {
+        return xOntology;
+    }
+
+    public Team03Ontology getTeamOntology() {
+        return teamOntology;
+    }
+
+    public MessageTemplate getMtOntoAndCodec() {
+        return mtOntoAndCodec;
+    }
+
     /**
      * Just adds the NOT_UNDERSTOOD behavior.
      */
@@ -68,7 +72,7 @@ public abstract class RFBAgent extends Agent {
     protected void setup() {
         getContentManager().registerLanguage(codec);
         getContentManager().registerOntology(xOntology);
-        getContentManager().registerOntology(rfbOntology);
+        getContentManager().registerOntology(teamOntology);
         addBehaviour(NotUnderStoodBehavior);
     }
 
@@ -80,19 +84,21 @@ public abstract class RFBAgent extends Agent {
     protected void registerSelfWithServices(String[] types)
     {
         DFAgentDescription dfd = new DFAgentDescription();
-        ServiceDescription sd = new ServiceDescription();
-        sd.setName(this.getName());
         for (String type : types) {
+            System.out.println(getLocalName() + ": registered as " + type);
+            ServiceDescription sd = new ServiceDescription();
+            sd.setName(this.getName());
             sd.setType(type);
+            dfd.addServices(sd);
         }
-        dfd.addServices(sd);
+
         try {
             DFService.register(this, dfd);
         } catch (FIPAException e) {
             e.printStackTrace();
         }
 
-        System.out.println(getLocalName() + ": registered in the DFServices.");
+
     }
 
     /**

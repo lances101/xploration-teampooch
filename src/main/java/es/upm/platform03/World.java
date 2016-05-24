@@ -3,12 +3,7 @@ package es.upm.platform03;
 import es.upm.common03.RFBAgent;
 import es.upm.platform03.behaviours.World.HandleRoverMovementReply;
 import es.upm.platform03.behaviours.World.HandleRoverMovementRequest;
-import jade.core.AID;
-import jade.core.NotFoundException;
-import jade.domain.DFService;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.FIPAException;
+import es.upm.platform03.behaviours.World.HandleRoverResearchRequest;
 import jade.lang.acl.ACLMessage;
 import javafx.util.Pair;
 import org.joda.time.DateTime;
@@ -18,8 +13,8 @@ import java.util.ArrayList;
 
 public class World extends RFBAgent {
 
-    XplorationMap _map;
     ArrayList<Pair<ACLMessage, DateTime>> moveConvo = new ArrayList<>();
+    ArrayList<Pair<ACLMessage, DateTime>> researchConvo = new ArrayList<>();
     @Override
     protected void setup() {
 
@@ -27,35 +22,10 @@ public class World extends RFBAgent {
         registerSelfWithServices(new String[]{"World", "Proxy"});
         super.setup();
 
-        try {
-            addBehaviour(new HandleRoverMovementRequest(this, moveConvo));
-            addBehaviour(new HandleRoverMovementReply(this, 250, findMapService(), moveConvo));
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-            System.out.println("Could not find map. SUDOKU!");
-            doDelete();
-        }
-    }
+        addBehaviour(new HandleRoverMovementRequest(this, moveConvo));
+        addBehaviour(new HandleRoverMovementReply(this, 250, moveConvo));
+        addBehaviour(new HandleRoverResearchRequest(this, researchConvo));
+        addBehaviour(new HandleRoverMovementReply(this, 250, researchConvo));
 
-    AID findMapService() throws NotFoundException {
-        DFAgentDescription dfd = new DFAgentDescription();
-        ServiceDescription sd = new ServiceDescription();
-        sd.setType("Map");
-        dfd.addServices(sd);
-
-        DFAgentDescription[] found;
-        try {
-            found = DFService.search(this, dfd);
-            if (found.length == 0) {
-                System.out.printf("%s: Search yielded nothing. Waiting.%n",
-                        this.getLocalName());
-                throw new NotFoundException("Could not find World.");
-            }
-            return found[0].getName();
-
-        } catch (FIPAException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }
