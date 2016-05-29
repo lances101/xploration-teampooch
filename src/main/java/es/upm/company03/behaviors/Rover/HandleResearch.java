@@ -25,12 +25,19 @@ public class HandleResearch extends SimpleBehaviour {
     private State state = State.Send;
     private MessageTemplate mtResearch;
 
+    public void startResearch()
+    {
+        state = State.Send;
+        this.reset();
+    }
     public HandleResearch(TeamAgent agent, AID world) {
         this.agent = agent;
         this.world = world;
+        this.state = State.End;
         mtResearch = MessageTemplate.and(agent.getMtOntoAndCodec(),
                                 MessageTemplate.MatchProtocol(agent.getxOntology().PROTOCOL_ANALYZE_MINERAL)
         );
+
     }
 
     @Override
@@ -83,6 +90,6 @@ public class HandleResearch extends SimpleBehaviour {
 
     @Override
     public boolean done() {
-        return false;
+        return state == State.End;
     }
 }

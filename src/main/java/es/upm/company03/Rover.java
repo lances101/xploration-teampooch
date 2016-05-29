@@ -1,12 +1,11 @@
 package es.upm.company03;
 
-import es.upm.common03.TeamConstants;
 import es.upm.common03.TeamAgent;
+import es.upm.common03.TeamConstants;
 import es.upm.common03.ontology.InformAID;
+import es.upm.company03.behaviors.Rover.HandleMovement;
 import es.upm.company03.behaviors.Rover.HandleResearch;
-import es.upm.ontology.Direction;
 import es.upm.ontology.Location;
-import es.upm.ontology.RequestRoverMovement;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
@@ -21,7 +20,7 @@ import java.util.logging.Level;
 public class Rover extends TeamAgent {
     Location location;
     AID world;
-
+    HandleMovement bhvMovement;
     @Override
     protected void setup() {
         AID companyAID = null;
@@ -46,16 +45,14 @@ public class Rover extends TeamAgent {
         super.setup();
         InformCompany(companyAID);
         addBehaviour(new HandleResearch(this, world));
+        bhvMovement = new HandleMovement(this, world);
+        addBehaviour(bhvMovement);
 
-
-
-
-        sendMovementMessage(TeamConstants.Direction.DOWN_LEFT);
-        doWait(1000);
-        sendMovementMessage(TeamConstants.Direction.CANCEL);
+        bhvMovement.startMovement(location, TeamConstants.Direction.UP);
         doWait(2000);
-        sendMovementMessage(TeamConstants.Direction.DOWN_RIGHT);
-        doWait(6000);
+        bhvMovement.startMovement(location, TeamConstants.Direction.CANCEL);
+        doWait(2000);
+        bhvMovement.startMovement(location, TeamConstants.Direction.UP);
 
 
     }
@@ -80,34 +77,6 @@ public class Rover extends TeamAgent {
         }
         send(msg);
     }
-
-    void sendMovementMessage(int dir) {
-        try{
-            ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-            message.setProtocol(xOntology.PROTOCOL_ROVER_MOVEMENT);
-            message.setOntology(xOntology.getName());
-            message.setLanguage(codec.getName());
-            message.addReceiver(world);
-            if(dir == TeamConstants.Direction.CANCEL){
-                message.setPerformative(ACLMessage.CANCEL);
-            }
-            else {
-                RequestRoverMovement request = new RequestRoverMovement();
-                Direction direction = new Direction();
-                direction.setX(dir);
-                request.setDirection(direction);
-                getContentManager().fillContent(message, new Action(getAID(), request));
-            }
-            send(message);
-            System.out.printf("%s: requesting movement towards %d %n",
-                    getLocalName(), dir);
-        } catch (Codec.CodecException e) {
-            e.printStackTrace();
-        } catch (OntologyException e) {
-            e.printStackTrace();
-        }
-    }
-
 
 }
 

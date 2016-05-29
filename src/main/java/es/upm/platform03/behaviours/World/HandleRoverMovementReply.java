@@ -1,6 +1,7 @@
 package es.upm.platform03.behaviours.World;
 
 
+import es.upm.common03.LocationCalculator;
 import es.upm.ontology.Location;
 import es.upm.ontology.RequestRoverMovement;
 import es.upm.platform03.World;
@@ -60,45 +61,8 @@ public class HandleRoverMovementReply extends TickerBehaviour {
             RequestRoverMovement movement = (RequestRoverMovement) action.getAction();
             int direction = movement.getDirection().getX();
             Location location = XplorationMap.GetPosition(msg.getSender());
-            int xMod = 0,yMod = 0;
-            switch(direction)
-            {
-                case 1:
-                    yMod = -1;
-                    break;
-                case 2:
-                    yMod = -1;
-                    xMod = 1;
-                    break;
-                case 3:
-                    yMod = 1;
-                    xMod = 1;
-                    break;
-                case 4:
-                    yMod = 1;
-                    break;
-                case 5:
-                    yMod = 1;
-                    xMod = -1;
-                    break;
-                case 6:
-                    yMod = -1;
-                    xMod = -1;
-                    break;
-                default:
-                    agent.replyWithNotUnderstood(msg);
-                    for (int i = 0; i < moveConvo.size(); i++) {
-                        ACLMessage convoMsg = moveConvo.get(i).getKey();
-                        if (convoMsg.getSender().equals(msg.getSender())) {
-                            moveConvo.remove(i);
-                            break;
-                        }
-
-                    }
-            }
-            location.setX(location.getX() + xMod);
-            location.setY(location.getY() + yMod);
-            return location;
+            Location newLocation = LocationCalculator.calculateNewLocation(location, direction);
+            return newLocation;
         } catch (Codec.CodecException e) {
             e.printStackTrace();
         } catch (OntologyException e) {

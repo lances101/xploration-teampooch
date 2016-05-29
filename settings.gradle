@@ -1,2 +1,3 @@
 rootProject.name = 'xploration-team03'
-
+gradle.ext.mavenUser = "xploration"
+gradle.ext.mavenPass = "deb1032e908e5337259969f6a821a7ec075209c6272f16306e9c6e4e5d79"

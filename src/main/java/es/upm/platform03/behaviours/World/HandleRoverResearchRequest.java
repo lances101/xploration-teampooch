@@ -14,12 +14,14 @@ public class HandleRoverResearchRequest extends CyclicBehaviour {
     int movementMillis = 3000;
     World agent;
     ArrayList<Pair<ACLMessage, DateTime>> researchConvo;
+    ArrayList<Pair<ACLMessage, DateTime>> moveConvo;
     MessageTemplate mtAll;
 
-    public HandleRoverResearchRequest(World agent, ArrayList<Pair<ACLMessage, DateTime>> researchConvo) {
+    public HandleRoverResearchRequest(World agent, ArrayList<Pair<ACLMessage, DateTime>> researchConvo, ArrayList<Pair<ACLMessage, DateTime>> moveConvo) {
         super(agent);
         this.agent = agent;
         this.researchConvo = researchConvo;
+        this.moveConvo = moveConvo;
         mtAll = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
                 MessageTemplate.and(agent.getMtOntoAndCodec(),
                         MessageTemplate.MatchProtocol(agent.getxOntology().PROTOCOL_ANALYZE_MINERAL)));
@@ -33,7 +35,8 @@ public class HandleRoverResearchRequest extends CyclicBehaviour {
             return;
         }
         System.out.println("Got new request for research from " + msg.getSender().getLocalName());
-        if (researchConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender())) {
+        if (researchConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender()) ||
+                moveConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender())){
             System.out.println("Sending REFUSE to rover");
             ACLMessage reply = msg.createReply();
             reply.setPerformative(ACLMessage.REFUSE);

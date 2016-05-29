@@ -16,6 +16,10 @@ public class HandleMessageProxy extends CyclicBehaviour {
     @Override
     public void action() {
         ACLMessage message = agent.receive();
+        if (message == null) {
+            block();
+            return;
+        }
         message.removeReceiver(agent.getAID());
 
     }

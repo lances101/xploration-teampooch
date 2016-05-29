@@ -1,9 +1,11 @@
 package es.upm.platform03;
 
 import es.upm.common03.TeamAgent;
-import es.upm.ontology.Location;
 import es.upm.platform03.behaviours.Broker.HandleMessageProxy;
-import es.upm.platform03.behaviours.World.*;
+import es.upm.platform03.behaviours.World.HandleRoverMovementReply;
+import es.upm.platform03.behaviours.World.HandleRoverMovementRequest;
+import es.upm.platform03.behaviours.World.HandleRoverResearchReply;
+import es.upm.platform03.behaviours.World.HandleRoverResearchRequest;
 import jade.lang.acl.ACLMessage;
 import javafx.util.Pair;
 import org.joda.time.DateTime;
@@ -19,15 +21,10 @@ public class World extends TeamAgent {
     protected void setup() {
         super.setup();
         System.out.printf("%s is starting up!%n", getLocalName());
-        Location loc = new Location();
-        loc.setX(5);
-        loc.setY(5);
-        XplorationMap.GetAgentsInRange(1, loc);
 
-
-        addBehaviour(new HandleRoverMovementRequest(this, moveConvo));
+        addBehaviour(new HandleRoverMovementRequest(this, moveConvo, researchConvo));
         addBehaviour(new HandleRoverMovementReply(this, 250, moveConvo));
-        addBehaviour(new HandleRoverResearchRequest(this, researchConvo));
+        addBehaviour(new HandleRoverResearchRequest(this, researchConvo, moveConvo));
         addBehaviour(new HandleRoverResearchReply(this, 250, researchConvo));
         addBehaviour(new HandleMessageProxy(this));
 
