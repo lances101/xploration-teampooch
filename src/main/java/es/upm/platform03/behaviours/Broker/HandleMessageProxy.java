@@ -1,4 +1,4 @@
-package es.upm.platform03.behaviors.Broker;
+package es.upm.platform03.behaviours.Broker;
 
 import es.upm.common03.TeamAgent;
 import jade.core.behaviours.CyclicBehaviour;

@@ -3,8 +3,8 @@ package es.upm.platform03;
 import es.upm.common03.TeamAgent;
 import es.upm.common03.behaviors.EmptyTimeoutBehavior;
 import es.upm.ontology.Company;
-import es.upm.platform03.behaviors.Spacecraft.HandleRegistrationRequest;
-import es.upm.platform03.behaviors.Spacecraft.HandleReleaseCapsule;
+import es.upm.platform03.behaviours.Spacecraft.HandleRegistrationRequest;
+import es.upm.platform03.behaviours.Spacecraft.HandleReleaseCapsule;
 import jade.core.behaviours.FSMBehaviour;
 import jade.core.behaviours.ParallelBehaviour;
 
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 /**
  * Spacecraft agent. Handles the initialization of other agents of the platform.
- * Handles the following behaviors:
+ * Handles the following behaviours:
  * <br>
  * - Company registration
  */

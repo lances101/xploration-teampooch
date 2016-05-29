@@ -7,7 +7,7 @@ import es.upm.company03.behaviors.Company.HandleRegistration;
 
 /**
  * Company agent. Handles the initialization of other agents of the company.
- * Handles the following behaviors:
+ * Handles the following behaviours:
  * <br>
  *  - Company registration
  */

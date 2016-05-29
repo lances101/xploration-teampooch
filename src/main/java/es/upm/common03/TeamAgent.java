@@ -29,7 +29,7 @@ public abstract class TeamAgent extends Agent {
     protected Team03Ontology teamOntology = (Team03Ontology) Team03Ontology.getInstance();
     protected MessageTemplate mtOntoAndCodec = MessageTemplate.and(MessageTemplate.or(MessageTemplate.MatchOntology(xOntology.getName()), MessageTemplate.MatchOntology(teamOntology.getName())), MessageTemplate.MatchLanguage(codec.getName()));
     /**
-     * Simple behaviors that catches NOT_UNDERSTOOD's and outputs them to console.
+     * Simple behaviours that catches NOT_UNDERSTOOD's and outputs them to console.
      */
     protected CyclicBehaviour NotUnderStoodBehavior = new CyclicBehaviour() {
         @Override
@@ -105,7 +105,7 @@ public abstract class TeamAgent extends Agent {
     /**
      * Allows to handle a message by replying to it with a
      * NOT_UNDERSTOOD performative. Use this for debugging in
-     * other behaviors.
+     * other behaviours.
      * @param msg the ACLMessage received
      */
     public void replyWithNotUnderstood(ACLMessage msg)
