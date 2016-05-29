@@ -1,7 +1,6 @@
-package es.upm.platform03.behaviours.Broker;
+package es.upm.platform03.behaviors.Broker;
 
 import es.upm.common03.TeamAgent;
-import es.upm.platform03.XplorationMap;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 

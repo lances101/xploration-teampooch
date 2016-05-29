@@ -1,4 +1,4 @@
-package es.upm.platform03.behaviours.World;
+package es.upm.platform03.behaviors.World;
 
 import es.upm.ontology.Location;
 import es.upm.ontology.Mineral;

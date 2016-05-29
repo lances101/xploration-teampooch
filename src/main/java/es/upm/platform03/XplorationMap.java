@@ -58,6 +58,7 @@ public class XplorationMap {
                 }
             }
         });
+        if(result.size() == 0) return null;
         return (AID[]) result.toArray();
     }
 

@@ -1,4 +1,4 @@
-package es.upm.platform03.behaviours.Spacecraft;
+package es.upm.platform03.behaviors.Spacecraft;
 
 import es.upm.common03.TeamAgent;
 import es.upm.ontology.Company;

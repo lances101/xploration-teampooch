@@ -2,8 +2,8 @@ package es.upm.platform03;
 
 import es.upm.common03.TeamAgent;
 import es.upm.ontology.Location;
-import es.upm.platform03.behaviours.Broker.HandleMessageProxy;
-import es.upm.platform03.behaviours.World.*;
+import es.upm.platform03.behaviors.Broker.HandleMessageProxy;
+import es.upm.platform03.behaviors.World.*;
 import jade.lang.acl.ACLMessage;
 import javafx.util.Pair;
 import org.joda.time.DateTime;
