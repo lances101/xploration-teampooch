@@ -45,16 +45,17 @@ public class HandleRoverResearchReply extends TickerBehaviour {
             mineral.setType(mineralType);
             minResult.setMineral(mineral);
             try {
-                agent.getContentManager().fillContent(msg, new Action(agent.getAID(), minResult));
+                agent.getContentManager().fillContent(reply, new Action(agent.getAID(), minResult));
+                agent.send(reply);
             } catch (Codec.CodecException e) {
                 e.printStackTrace();
             } catch (OntologyException e) {
                 e.printStackTrace();
             }
-            agent.send(reply);
+
             researchConvo.remove(i);
             i--;
-            System.out.printf("Rover %s has finished movement%n", msg.getSender().getLocalName());
+            System.out.printf("Rover %s has finished research%n", msg.getSender().getLocalName());
         }
     }
 }

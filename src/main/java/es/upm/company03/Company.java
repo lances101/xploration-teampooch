@@ -1,6 +1,6 @@
 package es.upm.company03;
 
-import es.upm.common03.RFBAgent;
+import es.upm.common03.TeamAgent;
 import es.upm.company03.behaviors.Company.HandleCapsuleReleaseInform;
 import es.upm.company03.behaviors.Company.HandleRegistration;
 
@@ -11,7 +11,7 @@ import es.upm.company03.behaviors.Company.HandleRegistration;
  * <br>
  *  - Company registration
  */
-public class Company extends RFBAgent {
+public class Company extends TeamAgent {
 
 
     final static String companySuffix = "03";

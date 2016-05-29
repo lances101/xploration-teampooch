@@ -3,7 +3,7 @@ package es.upm.common03;
 /**
  * Created by borismakogonyuk on 08.05.16.
  */
-public class RFBConstants {
+public class TeamConstants {
     public class Direction{
         public final static int CANCEL = -1;
         public final static int UP = 0;

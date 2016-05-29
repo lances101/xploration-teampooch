@@ -1,7 +1,7 @@
 package es.upm.platform03.behaviours.Spacecraft;
 
-import es.upm.common03.CompanyAIDTuple;
-import es.upm.common03.RFBAgent;
+import es.upm.common03.TeamAgent;
+import es.upm.ontology.Company;
 import es.upm.ontology.RegistrationRequest;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -19,29 +19,27 @@ import java.util.ArrayList;
  */
 public class HandleRegistrationRequest extends CyclicBehaviour {
 
-    RFBAgent agent;
+    TeamAgent agent;
     DateTime registrationDeadline;
-    ArrayList<CompanyAIDTuple> companies;
+    ArrayList<Company> companies;
 
-    public HandleRegistrationRequest(RFBAgent agent, int registrationSeconds, ArrayList<CompanyAIDTuple> companies) {
+    public HandleRegistrationRequest(TeamAgent agent, ArrayList<Company> companies, int registrationSeconds) {
         super(agent);
         this.agent = agent;
         this.registrationDeadline = DateTime.now().plusSeconds(registrationSeconds);
         this.companies = companies;
+        matchRegRequest =
+                MessageTemplate.and(agent.getMtOntoAndCodec(),
+                        MessageTemplate.and(
+                                MessageTemplate.MatchProtocol(agent.getxOntology().PROTOCOL_REGISTRATION),
+                                MessageTemplate.MatchPerformative(ACLMessage.REQUEST)
+                        )
+                );
     }
 
     MessageTemplate matchRegRequest;
     @Override
     public void action() {
-        if(matchRegRequest == null) {
-            matchRegRequest =
-                    MessageTemplate.and(agent.getMtOntoAndCodec(),
-                            MessageTemplate.and(
-                                    MessageTemplate.MatchProtocol(agent.getxOntology().PROTOCOL_REGISTRATION),
-                                    MessageTemplate.MatchPerformative(ACLMessage.REQUEST)
-                            )
-                    );
-        }
         ACLMessage msg = agent.receive(matchRegRequest);
         if (msg == null) {
             block();
@@ -65,10 +63,12 @@ public class HandleRegistrationRequest extends CyclicBehaviour {
             Action ac = (Action) agent.getContentManager().extractContent(msg);
             RegistrationRequest regReq = (RegistrationRequest) ac.getAction();
 
-            if (companies.stream().anyMatch(companyTuple -> companyTuple.getCompany() == senderID)) {
+            if (companies.stream().anyMatch(companyTuple -> companyTuple.getCompany_agent() == senderID)) {
                 replyInform.setPerformative(ACLMessage.FAILURE);
             } else {
-                companies.add(new CompanyAIDTuple(regReq.getCompany(), msg.getSender()));
+                Company company = new Company();
+                company.setCompany_agent(msg.getSender());
+                companies.add(company);
                 System.out.printf("%s: team '%s' registered, informing...%n", agent.getLocalName(), regReq.getCompany());
                 replyInform.setPerformative(ACLMessage.INFORM);
             }

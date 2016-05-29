@@ -4,6 +4,7 @@ import es.upm.common03.ontology.Team03Ontology;
 import es.upm.ontology.XplorationOntology;
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
@@ -19,7 +20,7 @@ import jade.util.Logger;
  *  It implements a behavior that handles not_understood messages
  *  It has a couple of helper methods, but that's about it.
  */
-public abstract class RFBAgent extends Agent {
+public abstract class TeamAgent extends Agent {
 
     protected Logger logger = Logger.getJADELogger(this.getClass().getName());
     ;
@@ -118,6 +119,34 @@ public abstract class RFBAgent extends Agent {
                 msg.getSender(),
                 msg.getProtocol()
         );
+    }
+
+    /**
+     * Finds an agent with the specified service in the DFServices
+     * @param service
+     * @return
+     */
+    protected AID findService(String service) {
+        AID agent;
+        DFAgentDescription dfd = new DFAgentDescription();
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType(service);
+        dfd.addServices(sd);
+
+        DFAgentDescription[] found;
+        try {
+            found = DFService.search(this, dfd);
+            if (found.length == 0) {
+                System.out.printf("%s: Search yielded nothing. Waiting.%n",
+                        this.getLocalName());
+            }
+            agent = found[0].getName();
+            return agent;
+
+        } catch (FIPAException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

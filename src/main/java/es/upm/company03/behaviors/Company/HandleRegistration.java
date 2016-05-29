@@ -1,6 +1,6 @@
 package es.upm.company03.behaviors.Company;
 
-import es.upm.common03.RFBAgent;
+import es.upm.common03.TeamAgent;
 import es.upm.ontology.RegistrationRequest;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -25,10 +25,10 @@ public class HandleRegistration extends SimpleBehaviour {
     final static String companyName = "Company";
     REGSTATE regState = REGSTATE.START;
     int regTries = 0;
-    RFBAgent agent;
+    TeamAgent agent;
     MessageTemplate matchReplies;
 
-    public HandleRegistration(RFBAgent agent) {
+    public HandleRegistration(TeamAgent agent) {
         super(agent);
         this.agent = agent;
     }

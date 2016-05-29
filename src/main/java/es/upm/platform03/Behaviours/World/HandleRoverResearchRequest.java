@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class HandleRoverResearchRequest extends CyclicBehaviour {
     int movementMillis = 3000;
     World agent;
-    ArrayList<Pair<ACLMessage, DateTime>> researchConvo = new ArrayList<Pair<ACLMessage, DateTime>>();
+    ArrayList<Pair<ACLMessage, DateTime>> researchConvo;
     MessageTemplate mtAll;
 
     public HandleRoverResearchRequest(World agent, ArrayList<Pair<ACLMessage, DateTime>> researchConvo) {

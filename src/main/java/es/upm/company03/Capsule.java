@@ -1,7 +1,8 @@
 package es.upm.company03;
 
-import es.upm.common03.RFBAgent;
-import es.upm.common03.ontology.InformAID;
+import es.upm.common03.TeamAgent;
+import es.upm.common03.ontology.*;
+import es.upm.common03.ontology.Rover;
 import es.upm.ontology.Location;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -13,11 +14,12 @@ import jade.wrapper.StaleProxyException;
 
 import java.util.logging.Level;
 
-public class Capsule extends RFBAgent {
+public class Capsule extends TeamAgent {
     Location location;
 
     @Override
     protected void setup() {
+        super.setup();
         AID companyAID = null;
         Object[] arguments = getArguments();
         if (arguments.length >= 2 && arguments[0] != null) {
@@ -36,7 +38,7 @@ public class Capsule extends RFBAgent {
             e.printStackTrace();
         }
         InformCompany(companyAID);
-        super.setup();
+
     }
 
     private void InformCompany(AID company) {
@@ -45,18 +47,25 @@ public class Capsule extends RFBAgent {
         msg.setOntology(teamOntology.getName());
         msg.setProtocol(teamOntology.PROTOCOL_INFORM_AID);
         msg.addReceiver(company);
-        InformAID aid = new InformAID();
+        InformAID informAID = new InformAID();
         es.upm.common03.ontology.Capsule capsule = new es.upm.common03.ontology.Capsule();
+        //TODO: remove. its useless. added because I cannot bother to change the ontology
+        Rover rover = new Rover();
+        rover.setName("Name");
+        capsule.setRover(rover);
+        capsule.setName("Name");
         capsule.setCapsule_agent(getAID());
-        aid.setSubject(capsule);
+
+        informAID.setSubject(capsule);
         try {
-            getContentManager().fillContent(msg, new Action(getAID(), capsule));
+            getContentManager().fillContent(msg, new Action(getAID(), informAID));
+            send(msg);
         } catch (Codec.CodecException e) {
             e.printStackTrace();
         } catch (OntologyException e) {
             e.printStackTrace();
         }
-        send(msg);
+
     }
 
 
