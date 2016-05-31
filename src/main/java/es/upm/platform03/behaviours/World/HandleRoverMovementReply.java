@@ -1,7 +1,7 @@
 package es.upm.platform03.behaviours.World;
 
 
-import es.upm.common03.LocationCalculator;
+import es.upm.common03.LocationUtility;
 import es.upm.ontology.Location;
 import es.upm.ontology.RequestRoverMovement;
 import es.upm.platform03.World;
@@ -44,13 +44,14 @@ public class HandleRoverMovementReply extends TickerBehaviour {
                 continue;
             }
             XplorationMap.UpdatePosition(msg.getSender(), loc);
+
             ACLMessage reply = msg.createReply();
             reply.setPerformative(ACLMessage.INFORM);
             agent.send(reply);
             moveConvo.remove(i);
             i--;
 
-            System.out.printf("Rover %s has finished movement%n", msg.getSender().getLocalName());
+            System.out.printf("Moved %s to %d|%d%n", msg.getSender().getLocalName(), loc.getX(), loc.getY());
         }
     }
 
@@ -61,8 +62,7 @@ public class HandleRoverMovementReply extends TickerBehaviour {
             RequestRoverMovement movement = (RequestRoverMovement) action.getAction();
             int direction = movement.getDirection().getX();
             Location location = XplorationMap.getPosition(msg.getSender());
-            Location newLocation = LocationCalculator.calculateNewLocation(location, direction, XplorationMap.getSizeX(), XplorationMap.getSizeY());
-            XplorationMap.UpdatePosition(msg.getSender(), newLocation);
+            Location newLocation = LocationUtility.calculateNewLocation(location, direction, XplorationMap.getSizeX(), XplorationMap.getSizeY());
             return newLocation;
         } catch (Codec.CodecException e) {
             e.printStackTrace();

@@ -1,10 +1,9 @@
 package es.upm.company03.behaviors.Rover;
 
-import es.upm.common03.LocationCalculator;
+import es.upm.common03.LocationUtility;
 import es.upm.common03.TeamConstants;
 import es.upm.company03.Rover;
 import es.upm.ontology.Direction;
-import es.upm.ontology.Location;
 import es.upm.ontology.RequestRoverMovement;
 import es.upm.ontology.XplorationOntology;
 import jade.content.lang.Codec;
@@ -26,17 +25,14 @@ public class HandleMovement extends SimpleBehaviour {
         Receive,
         End
     }
-    private int direction;
+
     private Rover agent;
     private AID world;
     private State state = State.Send;
     private MessageTemplate mtMovement;
-    private Location currentLocation;
     public HandleMovement(Rover agent, AID world) {
         this.agent = agent;
         this.world = world;
-        this.direction = agent.getNextDirection();
-        this.currentLocation = agent.getRoverLocation();
         mtMovement = MessageTemplate.and(agent.getMtOntoAndCodec(),
                 MessageTemplate.MatchProtocol(XplorationOntology.PROTOCOL_ROVER_MOVEMENT)
         );
@@ -51,12 +47,13 @@ public class HandleMovement extends SimpleBehaviour {
                 message.setOntology(agent.getxOntology().getName());
                 message.setLanguage(agent.getCodec().getName());
                 message.addReceiver(world);
-                if (direction == TeamConstants.Direction.CANCEL) {
+                if (agent.getNextDirection() == TeamConstants.Direction.CANCEL) {
                     message.setPerformative(ACLMessage.CANCEL);
+                    state = State.End;
                 } else {
                     RequestRoverMovement request = new RequestRoverMovement();
                     Direction direction = new Direction();
-                    direction.setX(this.direction);
+                    direction.setX(agent.getNextDirection());
                     request.setDirection(direction);
                     try {
                         agent.getContentManager().fillContent(message, new Action(agent.getAID(), request));
@@ -70,7 +67,6 @@ public class HandleMovement extends SimpleBehaviour {
                     }
                 }
                 agent.send(message);
-                state = State.Receive;
                 break;
             case Receive:
                 ACLMessage msg = agent.receive(mtMovement);
@@ -87,9 +83,8 @@ public class HandleMovement extends SimpleBehaviour {
                         //just wait then
                         break;
                     case ACLMessage.INFORM:
-                        currentLocation = LocationCalculator.calculateNewLocation(currentLocation, direction, agent.getMapSizeX(), agent.getMapSizeY());
-                        agent.setRoverLocation(currentLocation);
-                        System.out.printf("We have moved! Now at %d, %d%n", currentLocation.getX(), currentLocation.getY());
+                        agent.setRoverLocation(LocationUtility.calculateNewLocation(agent.getRoverLocation(), agent.getNextDirection(), agent.getMapSizeX(), agent.getMapSizeY()));
+                        System.out.printf("We have moved! Now at %d, %d%n", agent.getRoverLocation().getX(), agent.getRoverLocation().getY());
                         state = State.End;
                         break;
                 }
@@ -101,7 +96,18 @@ public class HandleMovement extends SimpleBehaviour {
     }
 
     @Override
+    public int onEnd() {
+        return agent.getCurrentJob() == Rover.RoverJobs.ROAMING ? EndCodes.TO_ROAMING : EndCodes.TO_DELIVERING;
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        state = State.Send;
+    }
+
+    @Override
     public boolean done() {
-        return false;
+        return state == State.End;
     }
 }

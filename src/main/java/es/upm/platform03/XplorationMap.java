@@ -1,6 +1,5 @@
 package es.upm.platform03;
 
-import es.upm.common03.LocationCalculator;
 import es.upm.ontology.Location;
 import jade.core.AID;
 import org.joda.time.DateTime;
@@ -43,7 +42,7 @@ public class XplorationMap {
                    (x % 2 == 0 && y%2 == 1))
                     continue;
                 Random r = new Random();
-                switch (r.nextInt(4))
+                switch (r.nextInt(5))
                 {
                     case 0:
                         minerals[y][x] = "A";
@@ -81,8 +80,6 @@ public class XplorationMap {
     }
     public static void UpdatePosition(AID aid, Location location) {
         _instance.rovers.put(aid, location);
-        System.out.printf("New location for %s - %d | %d%n",
-                aid.getLocalName(), location.getX(), location.getY());
     }
 
     public static Location getPosition(AID aid) {
@@ -141,7 +138,7 @@ public class XplorationMap {
             loc.setX((int) (radius * Math.cos(angle) + center.x+1));
             loc.setY((int) (radius * Math.sin(angle) + center.y+1));
             while(!isValidPosition(loc.getX(), loc.getY()))
-                loc = LocationCalculator.calculateNewLocation(loc, 4, getSizeX(), getSizeY());
+                loc.setY(loc.getY()+1);
             result.add(loc);
         }
         return result.toArray(new Location[result.size()]);

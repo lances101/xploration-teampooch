@@ -17,7 +17,12 @@ import java.util.logging.Level;
  * Created by borismakogonyuk on 30.04.16.
  */
 public class Rover extends TeamAgent {
-    public static class RoverStates {
+    public enum RoverJobs{
+        STARTING,
+        ROAMING,
+        DELIVERING
+    }
+    private static class FSMStates {
         public static final String START = "START";
         public static final String ROAMING = "ROAMING";
         public static final String DELIVERING = "DELIVERING";
@@ -34,6 +39,13 @@ public class Rover extends TeamAgent {
     private int mapSizeX;
     private int mapSizeY;
     private String[][] mineralsFound;
+    private RoverJobs currentJob = RoverJobs.STARTING;
+    public RoverJobs getCurrentJob() {
+        return currentJob;
+    }
+    public void setCurrentJob(RoverJobs currentJob) {
+        this.currentJob = currentJob;
+    }
     public int getLastExitValue() {return fsm.getLastExitValue();}
     public int getNextDirection() {return nextDirection;}
     public void setNextDirection(int value) { this.nextDirection = value; }
@@ -82,19 +94,23 @@ public class Rover extends TeamAgent {
     }
 
     private void setupFSM() {
-        FSMBehaviour fsm = new FSMBehaviour();
+        fsm = new FSMBehaviour();
 
-        fsm.registerFirstState(new HandleInitialCapsuleHandshake(this, brokerAID), RoverStates.START);
-        fsm.registerState(new HandleRoaming(this), RoverStates.ROAMING);
-        fsm.registerState(new HandleDelivering(this), RoverStates.DELIVERING);
-        fsm.registerState(new HandleMovement(this, worldAID), RoverStates.MOVING);
-        fsm.registerState(new HandleAnalysis(this, worldAID), RoverStates.ANALYZING);
-        fsm.registerTransition(RoverStates.ROAMING, RoverStates.DELIVERING, HandleRoaming.EndCodes.TO_DELIVERING);
-        fsm.registerTransition(RoverStates.ROAMING, RoverStates.MOVING, HandleRoaming.EndCodes.TO_MOVING);
-        fsm.registerTransition(RoverStates.MOVING, RoverStates.ROAMING, HandleMovement.EndCodes.TO_ROAMING);
-        fsm.registerTransition(RoverStates.MOVING, RoverStates.DELIVERING, HandleMovement.EndCodes.TO_DELIVERING);
-        //fsm.registerTransition(RoverStates.ROAMING, RoverStates.ANALYZING, 1);
-        //fsm.registerTransition(RoverStates.ANALYZING, RoverStates.ROAMING, 0);
+        fsm.registerFirstState(new HandleInitialCapsuleHandshake(this, brokerAID), FSMStates.START);
+        fsm.registerState(new HandleRoaming(this), FSMStates.ROAMING);
+        fsm.registerState(new HandleDelivering(this), FSMStates.DELIVERING);
+        fsm.registerState(new HandleMovement(this, worldAID), FSMStates.MOVING);
+        fsm.registerState(new HandleAnalysis(this, worldAID), FSMStates.ANALYZING);
+        fsm.registerDefaultTransition(FSMStates.START, FSMStates.ROAMING);
+        fsm.registerTransition(FSMStates.ROAMING, FSMStates.DELIVERING, HandleRoaming.EndCodes.TO_DELIVERING, new String[]{FSMStates.DELIVERING});
+        fsm.registerTransition(FSMStates.ROAMING, FSMStates.MOVING, HandleRoaming.EndCodes.TO_MOVING, new String[]{FSMStates.MOVING});
+        fsm.registerTransition(FSMStates.ROAMING, FSMStates.ANALYZING, HandleRoaming.EndCodes.TO_ANALYZING, new String[]{FSMStates.ANALYZING});
+        fsm.registerTransition(FSMStates.MOVING, FSMStates.ROAMING, HandleMovement.EndCodes.TO_ROAMING);
+        fsm.registerTransition(FSMStates.MOVING, FSMStates.DELIVERING, HandleMovement.EndCodes.TO_DELIVERING);
+        fsm.registerTransition(FSMStates.ANALYZING, FSMStates.ROAMING, 0);
+
+
+        addBehaviour(fsm);
     }
 
     private void informCompany(AID company) {

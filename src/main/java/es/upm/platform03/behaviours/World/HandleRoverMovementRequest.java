@@ -32,9 +32,8 @@ public class HandleRoverMovementRequest extends CyclicBehaviour {
 
     @Override
     public void action() {
-        ACLMessage msg = myAgent.receive(mtAll);
+        ACLMessage msg = agent.receive(mtAll);
         if (msg == null) {
-            block();
             return;
         }
         switch (msg.getPerformative()) {
