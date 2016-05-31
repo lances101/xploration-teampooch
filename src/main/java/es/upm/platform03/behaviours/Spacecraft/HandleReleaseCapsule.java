@@ -4,27 +4,26 @@ import es.upm.common03.TeamAgent;
 import es.upm.ontology.Company;
 import es.upm.ontology.Location;
 import es.upm.ontology.RegisterAgents;
+import es.upm.ontology.XplorationOntology;
 import es.upm.platform03.XplorationMap;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
 import jade.core.AID;
-import jade.core.behaviours.SimpleBehaviour;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import javafx.util.Pair;
-import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.Random;
 
-public class HandleReleaseCapsule extends SimpleBehaviour {
+public class HandleReleaseCapsule extends CyclicBehaviour {
 
     boolean releaseCapsuleSent = false;
     TeamAgent agent;
     ArrayList<Company> companies;
     MessageTemplate mtInform;
-    ArrayList<Pair<Company, Location>> tempLocation = new ArrayList<>();
+    ArrayList<Pair<Company, Location>> tempLocations = new ArrayList<>();
 
     public HandleReleaseCapsule(TeamAgent a, ArrayList<Company> companies) {
         super(a);
@@ -37,10 +36,16 @@ public class HandleReleaseCapsule extends SimpleBehaviour {
                 )
         );
     }
+    private void fillTempLocations() {
+        Location[] locations = XplorationMap.findLocationForRovers(companies.size());
+        for(int i = 0; i < this.companies.size(); i++)
+            tempLocations.add(new Pair<>(this.companies.get(i), locations[i]));
+    }
 
     @Override
     public void action() {
         if (!releaseCapsuleSent) {
+            fillTempLocations();
             SendReleaseCapsuleMessages();
             releaseCapsuleSent = true;
             return;
@@ -57,9 +62,8 @@ public class HandleReleaseCapsule extends SimpleBehaviour {
             Company company = companies.stream().filter(c -> c.getCompany_agent().equals(sender)).findFirst().get();
             company.setCapsule(regAgents.getCapsule());
             company.getCapsule().setRover(regAgents.getRover());
-            System.out.println("Aware of " + sender.getLocalName() + " rover and capsule. Informing World");
             XplorationMap.UpdatePosition(company.getCapsule().getRover().getRover_agent(),
-                    tempLocation.stream().filter(c->c.getKey() == company).findFirst().get().getValue() );
+                    tempLocations.stream().filter(c->c.getKey() == company).findFirst().get().getValue() );
         } catch (Codec.CodecException e) {
             e.printStackTrace();
         } catch (OntologyException e) {
@@ -74,18 +78,13 @@ public class HandleReleaseCapsule extends SimpleBehaviour {
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setOntology(agent.getxOntology().getName());
             msg.setLanguage(agent.getCodec().getName());
-            msg.setProtocol(agent.getxOntology().PROTOCOL_RELEASE_CAPSULE);
+            msg.setProtocol(XplorationOntology.PROTOCOL_RELEASE_CAPSULE);
             msg.addReceiver(company.getCompany_agent());
-
-            //TODO: calculate real position. for now - random
-            Random rnd = new Random(DateTime.now().getMillis());
-
             es.upm.ontology.ReleaseCapsule releaseCapsule = new es.upm.ontology.ReleaseCapsule();
-            Location location = new Location();
-            location.setX(rnd.nextInt(5));
-            location.setY(rnd.nextInt(5));
+            Location location = tempLocations.stream().filter(c->c.getKey().getCompany_agent().equals(company.getCompany_agent())).findFirst().get().getValue();
             releaseCapsule.setLocation(location);
-            tempLocation.add(new Pair<Company, Location>(company, location));
+            releaseCapsule.setSizeX(XplorationMap.getSizeX());
+            releaseCapsule.setSizeY(XplorationMap.getSizeY());
             try {
                 agent.getContentManager().fillContent(msg, new Action(agent.getAID(), releaseCapsule));
                 agent.send(msg);
@@ -97,8 +96,4 @@ public class HandleReleaseCapsule extends SimpleBehaviour {
         }
     }
 
-    @Override
-    public boolean done() {
-        return false;
-    }
 }

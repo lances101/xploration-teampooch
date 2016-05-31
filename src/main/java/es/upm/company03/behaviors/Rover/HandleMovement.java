@@ -1,8 +1,8 @@
 package es.upm.company03.behaviors.Rover;
 
 import es.upm.common03.LocationCalculator;
-import es.upm.common03.TeamAgent;
 import es.upm.common03.TeamConstants;
+import es.upm.company03.Rover;
 import es.upm.ontology.Direction;
 import es.upm.ontology.Location;
 import es.upm.ontology.RequestRoverMovement;
@@ -16,47 +16,30 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 public class HandleMovement extends SimpleBehaviour {
-    enum State {
+    public static class EndCodes {
+        public static final int TO_ROAMING = 1;
+        public static final int TO_DELIVERING = 2;
+
+    }
+    public enum State {
         Send,
         Receive,
         End
     }
-
     private int direction;
-    private TeamAgent agent;
+    private Rover agent;
     private AID world;
     private State state = State.Send;
     private MessageTemplate mtMovement;
     private Location currentLocation;
-
-    public State getState() {
-        return state;
-    }
-    public int getDirection() {
-        return direction;
-    }
-    public void setDirection(int dir) {
-        this.direction = dir;
-    }
-    public Location getCurrentLocation() {
-        return currentLocation;
-    }
-
-
-    public HandleMovement(TeamAgent agent, AID world) {
+    public HandleMovement(Rover agent, AID world) {
         this.agent = agent;
         this.world = world;
+        this.direction = agent.getNextDirection();
+        this.currentLocation = agent.getRoverLocation();
         mtMovement = MessageTemplate.and(agent.getMtOntoAndCodec(),
                 MessageTemplate.MatchProtocol(XplorationOntology.PROTOCOL_ROVER_MOVEMENT)
         );
-        this.state = State.End;
-    }
-
-    public void startMovement(Location loc, int dir) {
-        this.currentLocation = loc;
-        this.direction = dir;
-        this.state = State.Send;
-        this.reset();
     }
 
     @Override
@@ -75,10 +58,8 @@ public class HandleMovement extends SimpleBehaviour {
                     Direction direction = new Direction();
                     direction.setX(this.direction);
                     request.setDirection(direction);
-
                     try {
                         agent.getContentManager().fillContent(message, new Action(agent.getAID(), request));
-                        agent.send(message);
                         System.out.printf("%s: requesting movement%n",
                                 agent.getLocalName());
                         state = State.Receive;
@@ -88,6 +69,8 @@ public class HandleMovement extends SimpleBehaviour {
                         e.printStackTrace();
                     }
                 }
+                agent.send(message);
+                state = State.Receive;
                 break;
             case Receive:
                 ACLMessage msg = agent.receive(mtMovement);
@@ -104,18 +87,21 @@ public class HandleMovement extends SimpleBehaviour {
                         //just wait then
                         break;
                     case ACLMessage.INFORM:
-                        currentLocation = LocationCalculator.calculateNewLocation(currentLocation, direction);
+                        currentLocation = LocationCalculator.calculateNewLocation(currentLocation, direction, agent.getMapSizeX(), agent.getMapSizeY());
+                        agent.setRoverLocation(currentLocation);
                         System.out.printf("We have moved! Now at %d, %d%n", currentLocation.getX(), currentLocation.getY());
                         state = State.End;
                         break;
                 }
-
+                break;
+            case End:
+                block();
                 break;
         }
     }
 
     @Override
     public boolean done() {
-        return state == State.End;
+        return false;
     }
 }

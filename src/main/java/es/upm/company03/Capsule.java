@@ -21,10 +21,13 @@ public class Capsule extends TeamAgent {
     protected void setup() {
         super.setup();
         AID companyAID = null;
+        int mapSizeX = 0, mapSizeY = 0;
         Object[] arguments = getArguments();
-        if (arguments.length >= 2 && arguments[0] != null) {
+        if (arguments.length >= 4 && arguments[0] != null) {
             companyAID = (arguments[0] instanceof AID ? (AID) arguments[0] : null);
             location = (arguments[1] instanceof Location ? (Location) arguments[1] : null);
+            mapSizeX = (arguments[2] instanceof Integer ? (Integer) arguments[2] : null);
+            mapSizeY = (arguments[3] instanceof Integer ? (Integer) arguments[3] : null);
         }
         if (location == null || companyAID == null) {
             logger.log(Level.SEVERE, "Tried to instantiate Capsule without location.");
@@ -32,7 +35,7 @@ public class Capsule extends TeamAgent {
         }
         System.out.printf("%s: dropped at %d,%d%n", getLocalName(), location.getX(), location.getY());
         try {
-            AgentController ac = getContainerController().createNewAgent("Rover03", "es.upm.company03.Rover", new Object[]{companyAID, location});
+            AgentController ac = getContainerController().createNewAgent("Rover03", "es.upm.company03.Rover", new Object[]{companyAID, location, mapSizeX, mapSizeY});
             ac.start();
         } catch (StaleProxyException e) {
             e.printStackTrace();

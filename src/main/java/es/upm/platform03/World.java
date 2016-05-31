@@ -20,7 +20,10 @@ public class World extends TeamAgent {
     @Override
     protected void setup() {
         super.setup();
+
         System.out.printf("%s is starting up!%n", getLocalName());
+
+        XplorationMap.getPosition(null);
 
         addBehaviour(new HandleRoverMovementRequest(this, moveConvo, researchConvo));
         addBehaviour(new HandleRoverMovementReply(this, 250, moveConvo));

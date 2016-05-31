@@ -13,7 +13,7 @@ import jade.lang.acl.MessageTemplate;
 /**
  * Created by borismakogonyuk on 25.05.16.
  */
-public class HandleResearch extends SimpleBehaviour {
+public class HandleAnalysis extends SimpleBehaviour {
     enum State {
         Send,
         Receive,
@@ -28,9 +28,9 @@ public class HandleResearch extends SimpleBehaviour {
     public void startResearch()
     {
         state = State.Send;
-        this.reset();
+        this.restart();
     }
-    public HandleResearch(TeamAgent agent, AID world) {
+    public HandleAnalysis(TeamAgent agent, AID world) {
         this.agent = agent;
         this.world = world;
         this.state = State.End;

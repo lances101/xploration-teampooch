@@ -123,7 +123,7 @@ public class HandleCapsuleReleaseInform extends SimpleBehaviour {
             spaceAID = msg.getSender();
             Action ce = (Action) agent.getContentManager().extractContent(msg);
             ReleaseCapsule releaseCap = (ReleaseCapsule) ce.getAction();
-            AgentController ac = myAgent.getContainerController().createNewAgent("Capsule" + "03", "es.upm.company03.Capsule", new Object[]{getAgent().getAID(), releaseCap.getLocation(),});
+            AgentController ac = myAgent.getContainerController().createNewAgent("Capsule" + "03", "es.upm.company03.Capsule", new Object[]{getAgent().getAID(), releaseCap.getLocation(), releaseCap.getSizeX(), releaseCap.getSizeY()});
             ac.start();
             System.out.printf("%s: Capsule released!%n", agent.getLocalName());
             state = CapsuleState.Gather;

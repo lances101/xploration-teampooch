@@ -37,8 +37,8 @@ public class HandleRoverResearchReply extends TickerBehaviour {
             ACLMessage msg = researchConvo.get(i).getKey();
             ACLMessage reply = msg.createReply();
             reply.setPerformative(ACLMessage.INFORM);
-            Location loc = XplorationMap.GetPosition(msg.getSender());
-            String mineralType = XplorationMap.GetMineralAtPosition(loc);
+            Location loc = XplorationMap.getPosition(msg.getSender());
+            String mineralType = XplorationMap.getMineralAtPosition(loc);
 
             MineralResult minResult = new MineralResult();
             Mineral mineral = new Mineral();

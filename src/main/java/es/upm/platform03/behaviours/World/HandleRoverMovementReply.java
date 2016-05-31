@@ -38,7 +38,7 @@ public class HandleRoverMovementReply extends TickerBehaviour {
             if(moveConvo.get(i).getValue().isAfterNow()) continue;
             ACLMessage msg = moveConvo.get(i).getKey();
 
-            Location loc = calculateNewPosition(msg);
+            Location loc = unpackAndCalculatePosition(msg);
             if(loc == null) {
                 agent.replyWithNotUnderstood(msg);
                 continue;
@@ -54,14 +54,15 @@ public class HandleRoverMovementReply extends TickerBehaviour {
         }
     }
 
-    private Location calculateNewPosition(ACLMessage msg)
+    private Location unpackAndCalculatePosition(ACLMessage msg)
     {
         try {
             Action action = (Action) agent.getContentManager().extractContent(msg);
             RequestRoverMovement movement = (RequestRoverMovement) action.getAction();
             int direction = movement.getDirection().getX();
-            Location location = XplorationMap.GetPosition(msg.getSender());
-            Location newLocation = LocationCalculator.calculateNewLocation(location, direction);
+            Location location = XplorationMap.getPosition(msg.getSender());
+            Location newLocation = LocationCalculator.calculateNewLocation(location, direction, XplorationMap.getSizeX(), XplorationMap.getSizeY());
+            XplorationMap.UpdatePosition(msg.getSender(), newLocation);
             return newLocation;
         } catch (Codec.CodecException e) {
             e.printStackTrace();
