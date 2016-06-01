@@ -1,6 +1,7 @@
 package es.upm.platform03;
 
 import es.upm.ontology.Location;
+import es.upm.platform03.visual.SimulationView;
 import jade.core.AID;
 import org.joda.time.DateTime;
 
@@ -26,14 +27,21 @@ public class XplorationMap {
     public XplorationMap() {
         minerals = generateRandomMaterials(sizeX, sizeY);
         printMinerals();
+        initializeForm();
     }
 
     public XplorationMap(String[][] minerals) {
         sizeY = minerals.length;
         sizeX = minerals[0].length;
         printMinerals();
+        initializeForm();
     }
-
+    SimulationView simView;
+    private void initializeForm()
+    {
+        simView = new SimulationView("Simulation View", minerals, rovers);
+        simView.show();
+    }
     private static String[][] generateRandomMaterials(int sizeX, int sizeY) {
         String[][] minerals = new String[sizeX+1][sizeY+1];
         for (int y = 1; y < sizeX+1; y++)
@@ -80,9 +88,11 @@ public class XplorationMap {
     }
     public static void UpdatePosition(AID aid, Location location) {
         _instance.rovers.put(aid, location);
+        _instance.simView.redrawMap();
     }
 
     public static Location getPosition(AID aid) {
+        if(!_instance.rovers.containsKey(aid)) return null;
         return _instance.rovers.get(aid);
     }
 

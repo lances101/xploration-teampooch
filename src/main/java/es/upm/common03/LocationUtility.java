@@ -33,7 +33,7 @@ public class LocationUtility {
             newLoc.setX(loc.getX()+modX);
 
         if(loc.getY() + modY > sizeY)
-            newLoc.setY(loc.getX() % 2 == 0? 2 : 1);
+            newLoc.setY(loc.getX() % 2 == 0? 1 : 2);
         else if(loc.getY() + modY < 1)
             newLoc.setY(loc.getX() % 2 == 0? sizeY - 1 : sizeY);
         else
