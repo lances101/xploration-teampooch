@@ -1,9 +1,21 @@
-; Thu May 26 19:56:13 CEST 2016
+; Sat Jun 04 20:00:24 CEST 2016
 ; 
 ;+ (version "3.5")
 ;+ (build "Build 663")
 
+([CompanyInfoQuery] of  %3AJADE-CLASS
+
+	(%3AJADE-IGNORE FALSE))
+
+([CompanyInfoResult] of  %3AJADE-CLASS
+
+	(%3AJADE-IGNORE FALSE))
+
 ([InformAID] of  %3AJADE-CLASS
+
+	(%3AJADE-IGNORE FALSE))
+
+([PROTOCOL_COMPANY_QUERY] of  %3AJADE-CLASS
 
 	(%3AJADE-IGNORE FALSE))
 

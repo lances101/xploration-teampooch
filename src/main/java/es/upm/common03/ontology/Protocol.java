@@ -10,7 +10,7 @@ import jade.core.*;
 Protocols are not used in any specific way and are included so that they can be used as part of the vocabulary.
 * Protege name: Protocol
 * @author ontology bean generator
-* @version 2016/05/26, 11:49:49
+* @version 2016/06/4, 20:00:25
 */
 public class Protocol implements Concept {
 

@@ -125,7 +125,7 @@ public class Rover extends TeamAgent {
         msg.setProtocol(teamOntology.PROTOCOL_INFORM_AID);
         msg.addReceiver(company);
         InformAID informAID = new InformAID();
-        es.upm.common03.ontology.Rover rover = new es.upm.common03.ontology.Rover();
+        es.upm.ontology.Rover rover = new es.upm.ontology.Rover();
         rover.setName("Name");
         rover.setRover_agent(getAID());
         informAID.setSubject(rover);

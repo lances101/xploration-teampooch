@@ -2,7 +2,6 @@ package es.upm.company03;
 
 import es.upm.common03.TeamAgent;
 import es.upm.common03.ontology.*;
-import es.upm.common03.ontology.Rover;
 import es.upm.ontology.Location;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -51,9 +50,9 @@ public class Capsule extends TeamAgent {
         msg.setProtocol(teamOntology.PROTOCOL_INFORM_AID);
         msg.addReceiver(company);
         InformAID informAID = new InformAID();
-        es.upm.common03.ontology.Capsule capsule = new es.upm.common03.ontology.Capsule();
+        es.upm.ontology.Capsule capsule = new es.upm.ontology.Capsule();
         //TODO: remove. its useless. added because I cannot bother to change the ontology
-        Rover rover = new Rover();
+        es.upm.ontology.Rover rover = new es.upm.ontology.Rover();
         rover.setName("Name");
         capsule.setRover(rover);
         capsule.setName("Name");

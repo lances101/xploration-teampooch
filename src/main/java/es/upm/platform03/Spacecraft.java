@@ -3,6 +3,7 @@ package es.upm.platform03;
 import es.upm.common03.TeamAgent;
 import es.upm.common03.behaviors.EmptyTimeoutBehavior;
 import es.upm.ontology.Company;
+import es.upm.platform03.behaviours.Spacecraft.HandleCompanyQuery;
 import es.upm.platform03.behaviours.Spacecraft.HandleRegistrationRequest;
 import es.upm.platform03.behaviours.Spacecraft.HandleReleaseCapsule;
 import jade.core.behaviours.FSMBehaviour;
@@ -25,7 +26,6 @@ public class Spacecraft extends TeamAgent {
         public static final String REGISTRATION_END = "REGISTRATION_END";
     }
     FSMBehaviour mainFSM;
-
     @Override
     protected void setup() {
         super.setup();
@@ -49,7 +49,10 @@ public class Spacecraft extends TeamAgent {
         bhvStart.addSubBehaviour(new HandleRegistrationRequest(this, companies, registrationPeriodSeconds));
         bhvStart.addSubBehaviour(new EmptyTimeoutBehavior(this, registrationPeriodSeconds*1000));
         mainFSM.registerFirstState(bhvStart, States.START);
-        mainFSM.registerState(new HandleReleaseCapsule(this, companies), States.REGISTRATION_END);
+        ParallelBehaviour bhvSimulation = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ALL);
+        bhvSimulation.addSubBehaviour(new HandleReleaseCapsule(this, companies));
+        bhvSimulation.addSubBehaviour(new HandleCompanyQuery(this, companies));
+        mainFSM.registerState(bhvSimulation, States.REGISTRATION_END);
         mainFSM.registerDefaultTransition(States.START, States.REGISTRATION_END);
 
         addBehaviour(mainFSM);

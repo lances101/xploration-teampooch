@@ -1,11 +1,11 @@
 package es.upm.company03.behaviors.Company;
 
 import es.upm.common03.TeamAgent;
-import es.upm.common03.ontology.Capsule;
 import es.upm.common03.ontology.InformAID;
-import es.upm.common03.ontology.Rover;
+import es.upm.ontology.Capsule;
 import es.upm.ontology.RegisterAgents;
 import es.upm.ontology.ReleaseCapsule;
+import es.upm.ontology.Rover;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;

@@ -1,6 +1,8 @@
 package es.upm.platform03.behaviours.Broker;
 
 import es.upm.platform03.World;
+import es.upm.platform03.XplorationMap;
+import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -23,7 +25,11 @@ public class HandleMoveInfoProxy extends CyclicBehaviour {
             return;
         }
         msg.removeReceiver(agent.getAID());
-
-
+        AID[] receivers = XplorationMap.getAgentsInRange(3, msg.getSender());
+        if(receivers.length > 0){
+            for (AID rec : receivers)
+                msg.addReceiver(rec);
+            agent.send(msg);
+        }
     }
 }

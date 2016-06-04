@@ -1,4 +1,4 @@
-; Thu May 26 19:56:13 CEST 2016
+; Sat Jun 04 20:00:24 CEST 2016
 ; 
 ;+ (version "3.5")
 ;+ (build "Build 663")
@@ -164,57 +164,57 @@
 ([KB_624645_Class99] of  Property_List
 )
 
-([KB_723146_Class178] of  Map
+([KB_646474_Class178] of  Map
 
 	(entries
-		[KB_723146_Class179]
-		[KB_723146_Class180]
-		[KB_723146_Class184]
-		[KB_723146_Class185])
-	(referenced_maps [KB_723146_Class181]))
+		[KB_646474_Class179]
+		[KB_646474_Class180]
+		[KB_646474_Class184]
+		[KB_646474_Class185])
+	(referenced_maps [KB_646474_Class181]))
 
-([KB_723146_Class179] of  Map_Entry
+([KB_646474_Class179] of  Map_Entry
 
 	(key "add_name_on_instance_form")
 	(key_class "java.lang.String")
 	(value "false")
 	(value_class "java.lang.String"))
 
-([KB_723146_Class180] of  Map_Entry
+([KB_646474_Class180] of  Map_Entry
 
 	(key "change_tracking_active")
 	(key_class "java.lang.String")
 	(value "false")
 	(value_class "java.lang.String"))
 
-([KB_723146_Class181] of  Map
+([KB_646474_Class181] of  Map
 
 	(entries
-		[KB_723146_Class182]
-		[KB_723146_Class183]))
+		[KB_646474_Class182]
+		[KB_646474_Class183]))
 
-([KB_723146_Class182] of  Map_Entry
+([KB_646474_Class182] of  Map_Entry
 
 	(key "xploration-ontology_Class10010")
 	(key_class "edu.stanford.smi.protege.model.Frame")
 	(value "313 93 202 123")
 	(value_class "java.awt.Rectangle"))
 
-([KB_723146_Class183] of  Map_Entry
+([KB_646474_Class183] of  Map_Entry
 
 	(key "xploration-ontology_Class10011")
 	(key_class "edu.stanford.smi.protege.model.Frame")
 	(value "552 41 202 123")
 	(value_class "java.awt.Rectangle"))
 
-([KB_723146_Class184] of  Map_Entry
+([KB_646474_Class184] of  Map_Entry
 
 	(key "InstanceDisplay.yellow_stickies")
 	(key_class "java.lang.String")
-	(value "KB_723146_Class181")
+	(value "KB_646474_Class181")
 	(value_class "java.util.Map"))
 
-([KB_723146_Class185] of  Map_Entry
+([KB_646474_Class185] of  Map_Entry
 
 	(key "suppress_instance_counting")
 	(key_class "java.lang.String")

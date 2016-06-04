@@ -1,4 +1,4 @@
-; Thu May 26 19:56:13 CEST 2016
+; Sat Jun 04 20:00:24 CEST 2016
 ; 
 ;+ (version "3.5")
 ;+ (build "Build 663")
@@ -7,9 +7,18 @@
 (defclass %3ACLIPS_TOP_LEVEL_SLOT_CLASS "Fake class to save top-level slot information"
 	(is-a USER)
 	(role abstract)
+	(single-slot result
+		(type INSTANCE)
+;+		(allowed-classes Company)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
 	(single-slot subject
 		(type INSTANCE)
 ;+		(allowed-classes Capsule Rover)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot company_number
+		(type INTEGER)
 ;+		(cardinality 0 1)
 		(create-accessor read-write)))
 
@@ -22,6 +31,27 @@
 ;+		(cardinality 0 1)
 		(create-accessor read-write)))
 
+(defclass CompanyInfoQuery
+	(is-a AgentAction)
+	(role concrete)
+	(single-slot company_number
+		(type INTEGER)
+;+		(cardinality 0 1)
+		(create-accessor read-write)))
+
+(defclass CompanyInfoResult
+	(is-a AgentAction)
+	(role concrete)
+	(single-slot result
+		(type INSTANCE)
+;+		(allowed-classes Company)
+;+		(cardinality 0 1)
+		(create-accessor read-write)))
+
 (defclass PROTOCOL_INFORM_AID
+	(is-a Protocol)
+	(role concrete))
+
+(defclass PROTOCOL_COMPANY_QUERY
 	(is-a Protocol)
 	(role concrete))
