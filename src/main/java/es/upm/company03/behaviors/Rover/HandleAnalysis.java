@@ -1,6 +1,6 @@
 package es.upm.company03.behaviors.Rover;
 
-import es.upm.common03.TeamAgent;
+import es.upm.company03.Rover;
 import es.upm.ontology.MineralResult;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -20,17 +20,12 @@ public class HandleAnalysis extends SimpleBehaviour {
         End
     }
 
-    private TeamAgent agent;
+    private Rover agent;
     private AID world;
     private State state = State.Send;
     private MessageTemplate mtResearch;
 
-    public void startResearch()
-    {
-        state = State.Send;
-        this.restart();
-    }
-    public HandleAnalysis(TeamAgent agent, AID world) {
+    public HandleAnalysis(Rover agent, AID world) {
         this.agent = agent;
         this.world = world;
         this.state = State.End;
@@ -75,6 +70,7 @@ public class HandleAnalysis extends SimpleBehaviour {
                             Action action = (Action) agent.getContentManager().extractContent(msg);
                             MineralResult result = (MineralResult) action.getAction();
                             System.out.println("Got mineral " + result.getMineral().getType());
+                            agent.addFinding(agent.getRoverLocation(), result.getMineral());
                         } catch (Codec.CodecException e) {
                             e.printStackTrace();
                         } catch (OntologyException e) {

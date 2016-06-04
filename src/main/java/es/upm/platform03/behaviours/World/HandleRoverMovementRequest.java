@@ -2,6 +2,7 @@ package es.upm.platform03.behaviours.World;
 
 import es.upm.ontology.RequestRoverMovement;
 import es.upm.platform03.World;
+import es.upm.platform03.XplorationMap;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
@@ -39,7 +40,8 @@ public class HandleRoverMovementRequest extends CyclicBehaviour {
         switch (msg.getPerformative()) {
             case ACLMessage.REQUEST:
                 if (moveConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender()) ||
-                        researchConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender())) {
+                    researchConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender()) ||
+                    XplorationMap.getRoverPosition(msg.getSender()) == null) {
                     System.out.println("Sending REFUSE to rover");
                     ACLMessage reply = msg.createReply();
                     reply.setPerformative(ACLMessage.REFUSE);

@@ -3,7 +3,9 @@ package es.upm.company03;
 import es.upm.common03.TeamAgent;
 import es.upm.common03.ontology.InformAID;
 import es.upm.company03.behaviors.Rover.*;
+import es.upm.ontology.Finding;
 import es.upm.ontology.Location;
+import es.upm.ontology.Mineral;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
 import jade.content.onto.basic.Action;
@@ -11,6 +13,7 @@ import jade.core.AID;
 import jade.core.behaviours.FSMBehaviour;
 import jade.lang.acl.ACLMessage;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 /**
@@ -38,15 +41,20 @@ public class Rover extends TeamAgent {
     private HandleAnalysis bhvAnalysis;
     private int mapSizeX;
     private int mapSizeY;
-    private String[][] mineralsFound;
+    private ArrayList<Finding> findings = new ArrayList<>();
     private RoverJobs currentJob = RoverJobs.STARTING;
+    public void addFinding(Location roverLocation, Mineral mineral) {
+        Finding finding = new Finding();
+        finding.setLocation(roverLocation);
+        finding.setMineral(mineral);
+        findings.add(finding);
+    }
     public RoverJobs getCurrentJob() {
         return currentJob;
     }
     public void setCurrentJob(RoverJobs currentJob) {
         this.currentJob = currentJob;
     }
-    public int getLastExitValue() {return fsm.getLastExitValue();}
     public int getNextDirection() {return nextDirection;}
     public void setNextDirection(int value) { this.nextDirection = value; }
     public Location getRoverLocation() {
@@ -72,7 +80,6 @@ public class Rover extends TeamAgent {
             capsuleLocation = arguments[1] instanceof Location ? (Location) arguments[1] : null;
             mapSizeX = arguments[2] instanceof Integer ? (Integer) arguments[2] : null;
             mapSizeY = arguments[3] instanceof Integer ? (Integer) arguments[3] : null;
-            mineralsFound = new String[mapSizeY+1][mapSizeX+1];
         }
         if (myLocation == null) {
             logger.log(Level.SEVERE, "Tried to instantiate Rover without location.");
@@ -108,8 +115,6 @@ public class Rover extends TeamAgent {
         fsm.registerTransition(FSMStates.MOVING, FSMStates.ROAMING, HandleMovement.EndCodes.TO_ROAMING);
         fsm.registerTransition(FSMStates.MOVING, FSMStates.DELIVERING, HandleMovement.EndCodes.TO_DELIVERING);
         fsm.registerTransition(FSMStates.ANALYZING, FSMStates.ROAMING, 0);
-
-
         addBehaviour(fsm);
     }
 

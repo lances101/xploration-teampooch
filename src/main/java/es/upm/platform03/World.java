@@ -1,7 +1,7 @@
 package es.upm.platform03;
 
 import es.upm.common03.TeamAgent;
-import es.upm.platform03.behaviours.Broker.HandleMessageProxy;
+import es.upm.platform03.behaviours.Broker.HandleMoveInfoProxy;
 import es.upm.platform03.behaviours.World.HandleRoverMovementReply;
 import es.upm.platform03.behaviours.World.HandleRoverMovementRequest;
 import es.upm.platform03.behaviours.World.HandleRoverResearchReply;
@@ -10,6 +10,7 @@ import jade.lang.acl.ACLMessage;
 import javafx.util.Pair;
 import org.joda.time.DateTime;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -21,15 +22,19 @@ public class World extends TeamAgent {
     protected void setup() {
         super.setup();
 
-        System.out.printf("%s is starting up!%n", getLocalName());
-
-        XplorationMap.getPosition(null);
+        try {
+            XplorationMap.initMapFromFile(System.getProperty("user.home")+ "/Downloads/map.txt");
+        } catch (IOException e) {
+            System.out.println("Could not setup Map. Exiting. ");
+            e.printStackTrace();
+            this.takeDown();
+        }
 
         addBehaviour(new HandleRoverMovementRequest(this, moveConvo, researchConvo));
         addBehaviour(new HandleRoverMovementReply(this, 250, moveConvo));
         addBehaviour(new HandleRoverResearchRequest(this, researchConvo, moveConvo));
         addBehaviour(new HandleRoverResearchReply(this, 250, researchConvo));
-        addBehaviour(new HandleMessageProxy(this));
+        addBehaviour(new HandleMoveInfoProxy(this));
 
         registerSelfWithServices(new String[]{"World", "Broker", "Proxy"});
     }

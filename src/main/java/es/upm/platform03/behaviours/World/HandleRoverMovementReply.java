@@ -43,7 +43,7 @@ public class HandleRoverMovementReply extends TickerBehaviour {
                 agent.replyWithNotUnderstood(msg);
                 continue;
             }
-            XplorationMap.UpdatePosition(msg.getSender(), loc);
+            XplorationMap.updateRoverPosition(msg.getSender(), loc);
 
             ACLMessage reply = msg.createReply();
             reply.setPerformative(ACLMessage.INFORM);
@@ -61,7 +61,7 @@ public class HandleRoverMovementReply extends TickerBehaviour {
             Action action = (Action) agent.getContentManager().extractContent(msg);
             RequestRoverMovement movement = (RequestRoverMovement) action.getAction();
             int direction = movement.getDirection().getX();
-            Location location = XplorationMap.getPosition(msg.getSender());
+            Location location = XplorationMap.getRoverPosition(msg.getSender());
             Location newLocation = LocationUtility.calculateNewLocation(location, direction, XplorationMap.getSizeX(), XplorationMap.getSizeY());
             return newLocation;
         } catch (Codec.CodecException e) {

@@ -36,7 +36,12 @@ public class HandleRoverResearchRequest extends CyclicBehaviour {
         }
         System.out.println("Got new request for research from " + msg.getSender().getLocalName());
         if (researchConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender()) ||
+<<<<<<< Updated upstream
                 moveConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender())){
+=======
+            moveConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender()) ||
+            XplorationMap.getRoverPosition(msg.getSender()) == null){
+>>>>>>> Stashed changes
             System.out.println("Sending REFUSE to rover");
             ACLMessage reply = msg.createReply();
             reply.setPerformative(ACLMessage.REFUSE);
