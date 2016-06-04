@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 
 public class HandleRoverMovementRequest extends CyclicBehaviour {
-    int movementMillis = 3000;
+    int movementMillis = 1000;
     World agent;
     ArrayList<Pair<ACLMessage, DateTime>> moveConvo;
     ArrayList<Pair<ACLMessage, DateTime>> researchConvo;
@@ -41,7 +41,7 @@ public class HandleRoverMovementRequest extends CyclicBehaviour {
             case ACLMessage.REQUEST:
                 if (moveConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender()) ||
                     researchConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender()) ||
-                    XplorationMap.getRoverPosition(msg.getSender()) == null) {
+                    XplorationMap.getPosition(msg.getSender()) == null) {
                     System.out.println("Sending REFUSE to rover");
                     ACLMessage reply = msg.createReply();
                     reply.setPerformative(ACLMessage.REFUSE);

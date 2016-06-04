@@ -1,7 +1,7 @@
 package es.upm.platform03;
 
-import es.upm.common03.LocationUtility;
 import es.upm.ontology.Location;
+import es.upm.platform03.visual.SimulationView;
 import jade.core.AID;
 import org.joda.time.DateTime;
 
@@ -31,6 +31,9 @@ public class XplorationMap {
         return _instance.sizeY;
     }
     public XplorationMap() {
+        minerals = generateRandomMaterials(sizeX, sizeY);
+        printMinerals();
+        initializeForm();
     }
     public static void initMapFromFile(String path) throws IOException {
         if (!Files.exists(Paths.get(path))) {
@@ -58,16 +61,17 @@ public class XplorationMap {
                 continue;
             }
 
-            String[] results = patMineral.split(line);
-            int stringIndex = 0;
-            for (int x = 1; x < _instance.sizeX+1; x++) {
-                if ((x % 2 == 1 && i % 2 == 0) ||
-                        (x % 2 == 0 && i % 2 == 1))
-                    continue;
-                _instance.minerals[i][x] = results[stringIndex];
-                stringIndex++;
-            }
-        }
+    public XplorationMap(String[][] minerals) {
+        sizeY = minerals.length;
+        sizeX = minerals[0].length;
+        printMinerals();
+        initializeForm();
+    }
+    SimulationView simView;
+    private void initializeForm()
+    {
+        simView = new SimulationView("Simulation View", minerals, rovers);
+        simView.show();
     }
     private static String[][] generateRandomMaterials(int sizeX, int sizeY) {
         String[][] minerals = new String[sizeX+1][sizeY+1];
@@ -115,8 +119,10 @@ public class XplorationMap {
     }
     public static void updateRoverPosition(AID aid, Location location) {
         _instance.rovers.put(aid, location);
+        _instance.simView.redrawMap();
     }
-    public static Location getRoverPosition(AID aid) {
+
+    public static Location getPosition(AID aid) {
         if(!_instance.rovers.containsKey(aid)) return null;
         return _instance.rovers.get(aid);
     }

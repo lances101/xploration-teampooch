@@ -1,6 +1,7 @@
 package es.upm.platform03.behaviours.World;
 
 import es.upm.platform03.World;
+import es.upm.platform03.XplorationMap;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -36,12 +37,8 @@ public class HandleRoverResearchRequest extends CyclicBehaviour {
         }
         System.out.println("Got new request for research from " + msg.getSender().getLocalName());
         if (researchConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender()) ||
-<<<<<<< Updated upstream
-                moveConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender())){
-=======
             moveConvo.stream().anyMatch(c -> c.getKey().getSender() == msg.getSender()) ||
-            XplorationMap.getRoverPosition(msg.getSender()) == null){
->>>>>>> Stashed changes
+            XplorationMap.getPosition(msg.getSender()) == null){
             System.out.println("Sending REFUSE to rover");
             ACLMessage reply = msg.createReply();
             reply.setPerformative(ACLMessage.REFUSE);

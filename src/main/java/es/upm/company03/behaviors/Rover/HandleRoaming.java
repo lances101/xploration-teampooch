@@ -1,5 +1,6 @@
 package es.upm.company03.behaviors.Rover;
 
+import es.upm.common03.TeamConstants;
 import es.upm.company03.Rover;
 import jade.core.behaviours.SimpleBehaviour;
 
@@ -25,10 +26,8 @@ public class HandleRoaming extends SimpleBehaviour {
 
     @Override
     public void action() {
-        System.out.println("Bitch, I'm roaming");
-
-        //agent.setNextDirection(TeamConstants.Direction.UP_RIGHT);
-        agent.setNextDirection(random.nextInt(6)+1);
+        agent.setNextDirection(TeamConstants.Direction.DOWN_RIGHT);
+        //agent.setNextDirection(random.nextInt(6)+1);
     }
 
     @Override
