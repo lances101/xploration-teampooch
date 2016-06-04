@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 public class XplorationMap {
     private static XplorationMap _instance = new XplorationMap();
     private HashMap<AID, Location> rovers = new HashMap<AID, Location>();
+    private HashMap<AID, Location> capsules = new HashMap<>();
     private String[][] minerals;
     private int sizeX = 10, sizeY = 10;
     SimulationView simView;
@@ -41,7 +42,7 @@ public class XplorationMap {
         _instance.initializeForm();
     }
     private void initializeForm() {
-        simView = new SimulationView("Simulation View", minerals, rovers);
+        simView = new SimulationView("Simulation View", minerals, rovers, capsules);
         simView.show();
     }
     private static void readMapFromFile(Path path) throws IOException {
@@ -114,6 +115,13 @@ public class XplorationMap {
         }
         System.out.printf("==================%n");
     }
+    public static void setCapsuleLocation(AID aid, Location location) {
+        _instance.capsules.put(aid, location);
+    }
+    public static Location getCapsulePosition(AID aid) {
+        if(!_instance.capsules.containsKey(aid))return null;
+        return _instance.capsules.get(aid);
+    }
     public static void updateRoverPosition(AID aid, Location location) {
         _instance.rovers.put(aid, location);
         _instance.simView.redrawMap();
@@ -127,7 +135,10 @@ public class XplorationMap {
         return _instance.minerals[location.getY()][location.getX()];
     }
     public static AID[] getAgentsInRange(int range, AID agent) {
-        return getAgentsInRange(range, _instance.rovers.get(agent));
+        Location loc = getRoverPosition(agent);
+        if(loc == null)
+            loc = getCapsulePosition(agent);
+        return getAgentsInRange(range, loc);
     }
     public static AID[] getAgentsInRange(int range, Location center) {
         ArrayList<Location> validLocations = new ArrayList<>();
@@ -143,14 +154,20 @@ public class XplorationMap {
         ArrayList<AID> result = new ArrayList<>();
         _instance.rovers.forEach((aid, location) -> {
             for (Location loc : validLocations) {
-                if (LocationUtility.areColliding(location, loc))
-                {
+                if (LocationUtility.areColliding(location, loc)) {
                     result.add(aid);
                 }
             }
         });
+        _instance.capsules.forEach((aid, location) ->{
+            for(Location loc : validLocations){
+                if(LocationUtility.areColliding(location, loc))
+                    result.add(aid);
+            }
+        });
         if(result.size() == 0) return null;
-        return (AID[]) result.toArray();
+
+        return (AID[]) result.toArray(new AID[0]);
     }
     public static Location[] findLocationForRovers(int count) {
         ArrayList<Location> result = new ArrayList<>();

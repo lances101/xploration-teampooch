@@ -62,8 +62,9 @@ public class HandleReleaseCapsule extends CyclicBehaviour {
             Company company = companies.stream().filter(c -> c.getCompany_agent().equals(sender)).findFirst().get();
             company.setCapsule(regAgents.getCapsule());
             company.getCapsule().setRover(regAgents.getRover());
-            XplorationMap.updateRoverPosition(company.getCapsule().getRover().getRover_agent(),
-                    tempLocations.stream().filter(c->c.getKey() == company).findFirst().get().getValue() );
+            Location loc = tempLocations.stream().filter(c->c.getKey() == company).findFirst().get().getValue();
+            XplorationMap.setCapsuleLocation(company.getCapsule().getCapsule_agent(), loc);
+            XplorationMap.updateRoverPosition(company.getCapsule().getRover().getRover_agent(), loc);
         } catch (Codec.CodecException e) {
             e.printStackTrace();
         } catch (OntologyException e) {
