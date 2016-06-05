@@ -1,5 +1,6 @@
 package es.upm.company03;
 
+import es.upm.common03.LocationUtility;
 import es.upm.common03.TeamAgent;
 import es.upm.common03.ontology.InformAID;
 import es.upm.company03.behaviors.Rover.*;
@@ -11,6 +12,7 @@ import jade.core.AID;
 import jade.core.behaviours.FSMBehaviour;
 import jade.lang.acl.ACLMessage;
 
+import java.util.Iterator;
 import java.util.logging.Level;
 
 /**
@@ -38,15 +40,23 @@ public class Rover extends TeamAgent {
     private HandleAnalysis bhvAnalysis;
     private int mapSizeX;
     private int mapSizeY;
-    private Findings findings = new Findings();
+    private Findings totalFindings = new Findings();
+    private Findings newFindings = new Findings();
     private RoverJobs currentJob = RoverJobs.STARTING;
     public void addFinding(Location roverLocation, Mineral mineral) {
+        Iterator<Finding> iter = totalFindings.getAllFinding();
+        while(iter.hasNext()) {
+            Finding find = iter.next();
+            if (LocationUtility.areColliding(find.getLocation(), roverLocation))
+                return;
+        }
         Finding finding = new Finding();
         finding.setLocation(roverLocation);
         finding.setMineral(mineral);
-        findings.addFinding(finding);
+        totalFindings.addFinding(finding);
+        newFindings.addFinding(finding);
     }
-    public int getFindingsCount(){ return findings.getFinding().size();}
+    public int getFindingsCount(){ return newFindings.getFinding().size();}
     public RoverJobs getCurrentJob() {
         return currentJob;
     }
@@ -107,6 +117,7 @@ public class Rover extends TeamAgent {
         fsm.registerState(new HandleMovement(this, worldAID), FSMStates.MOVING);
         fsm.registerState(new HandleAnalysis(this, worldAID), FSMStates.ANALYZING);
         fsm.registerDefaultTransition(FSMStates.START, FSMStates.ROAMING);
+        fsm.registerTransition(FSMStates.ROAMING, FSMStates.ROAMING, 0);
         fsm.registerTransition(FSMStates.ROAMING, FSMStates.DELIVERING, HandleRoaming.EndCodes.TO_DELIVERING, new String[]{FSMStates.DELIVERING});
         fsm.registerTransition(FSMStates.ROAMING, FSMStates.MOVING, HandleRoaming.EndCodes.TO_MOVING, new String[]{FSMStates.MOVING});
         fsm.registerTransition(FSMStates.ROAMING, FSMStates.ANALYZING, HandleRoaming.EndCodes.TO_ANALYZING, new String[]{FSMStates.ANALYZING});
@@ -116,6 +127,15 @@ public class Rover extends TeamAgent {
         addBehaviour(fsm);
     }
 
+    public boolean isLocationAnalyzed(Location location){
+        Iterator<Finding> iter = totalFindings.getAllFinding();
+        while(iter.hasNext()){
+            Finding find = iter.next();
+            if(LocationUtility.areColliding(find.getLocation(),location))
+                return true;
+        }
+        return false;
+    }
     public void informMovement() {
         try {
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
@@ -151,7 +171,7 @@ public class Rover extends TeamAgent {
             Frequency freq = new Frequency();
             freq.setChannel(3);
             findingsMessage.setFrequency(freq);
-            findingsMessage.setFindings(findings);
+            findingsMessage.setFindings(newFindings);
             getContentManager().fillContent(msg, new Action(getAID(), findingsMessage));
             send(msg);
         } catch (Codec.CodecException e) {
