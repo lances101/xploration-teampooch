@@ -22,6 +22,7 @@ public class XplorationMap {
     private static XplorationMap _instance = new XplorationMap();
     private HashMap<AID, Location> rovers = new HashMap<AID, Location>();
     private HashMap<AID, Location> capsules = new HashMap<>();
+    private ArrayList<Location> debugs = new ArrayList<>();
     private String[][] minerals;
     private int sizeX = 10, sizeY = 10;
     SimulationView simView;
@@ -42,7 +43,7 @@ public class XplorationMap {
         _instance.initializeForm();
     }
     private void initializeForm() {
-        simView = new SimulationView("Simulation View", minerals, rovers, capsules);
+        simView = new SimulationView("Simulation View", minerals, rovers, capsules, debugs);
         simView.show();
     }
     private static void readMapFromFile(Path path) throws IOException {
@@ -141,17 +142,9 @@ public class XplorationMap {
         return getAgentsInRange(range, loc);
     }
     public static AID[] getAgentsInRange(int range, Location center) {
-        ArrayList<Location> validLocations = new ArrayList<>();
-        for (int x = -range; x <= range; x++) {
-            for (int y = -range; y <= range; y++) {
-                Location loc = new Location();
-                loc.setX(center.getX() + x);
-                loc.setY(center.getY() + y);
-                validLocations.add(loc);
-            }
-        }
-
+        ArrayList<Location> validLocations = LocationUtility.getCellsInRange(center, range, getSizeX(), getSizeY());
         ArrayList<AID> result = new ArrayList<>();
+
         _instance.rovers.forEach((aid, location) -> {
             for (Location loc : validLocations) {
                 if (LocationUtility.areColliding(location, loc)) {
