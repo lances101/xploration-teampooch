@@ -1,6 +1,5 @@
 package es.upm.company03.behaviors.Rover;
 
-import es.upm.common03.TeamConstants;
 import es.upm.company03.Rover;
 import jade.core.behaviours.SimpleBehaviour;
 
@@ -24,17 +23,20 @@ public class HandleRoaming extends SimpleBehaviour {
         agent.setCurrentJob(Rover.RoverJobs.ROAMING);
     }
 
+    boolean findingFlag = false;
     @Override
     public void action() {
-        agent.informFindings();
-        agent.informMovement();
-        agent.setNextDirection(TeamConstants.Direction.DOWN_RIGHT);
+        if(agent.getFindingsCount() == 1 && !findingFlag){
+            agent.informFindings();
+            findingFlag = true;
+        }
+
     }
 
     @Override
     public int onEnd() {
         //TODO: figure out where actually we transition to.
-        return EndCodes.TO_MOVING;
+        return EndCodes.TO_ANALYZING;
     }
 
     @Override

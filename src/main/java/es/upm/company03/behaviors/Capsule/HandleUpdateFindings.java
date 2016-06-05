@@ -28,6 +28,7 @@ public class HandleUpdateFindings extends CyclicBehaviour {
             return;
         }
         msg.removeReceiver(agent.getAID());
+        msg.setSender(agent.getAID());
         msg.addReceiver(spacecraft);
         agent.send(msg);
         System.out.println("Capsule pushed findings to spacecraft");

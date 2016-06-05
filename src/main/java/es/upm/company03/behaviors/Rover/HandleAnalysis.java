@@ -28,7 +28,6 @@ public class HandleAnalysis extends SimpleBehaviour {
     public HandleAnalysis(Rover agent, AID world) {
         this.agent = agent;
         this.world = world;
-        this.state = State.End;
         mtResearch = MessageTemplate.and(agent.getMtOntoAndCodec(),
                                 MessageTemplate.MatchProtocol(agent.getxOntology().PROTOCOL_ANALYZE_MINERAL)
         );
@@ -82,6 +81,12 @@ public class HandleAnalysis extends SimpleBehaviour {
 
                 break;
         }
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        state = State.Send;
     }
 
     @Override

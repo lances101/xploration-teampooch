@@ -12,6 +12,7 @@ import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.util.leap.List;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,11 +45,14 @@ public class HandleUpdateFindings extends CyclicBehaviour {
         System.out.println("HANDLING FINDINGS FOR " + msg.getSender().getLocalName());
         if(findings == null) findings = new AID[XplorationMap.getSizeY()+1][XplorationMap.getSizeX()+1];
         try {
-            Company company = companies.stream().filter((c)->c.getCapsule().getCapsule_agent() == msg.getSender()).findFirst().get();
+            Company company = companies.stream()
+                    .filter((c)->c.getCapsule().getCapsule_agent().equals(msg.getSender()) ||
+                                 c.getCapsule().getRover().getRover_agent().equals(msg.getSender())).findFirst().get();
             Action act = (Action) agent.getContentManager().extractContent(msg);
             FindingsMessage findingMessage = (FindingsMessage) act.getAction();
-            ArrayList<Finding> tempFindings = (ArrayList<Finding>) findingMessage.getFindings().getFinding();
-            for(Finding finding : tempFindings){
+            List tempFindings = findingMessage.getFindings().getFinding();
+            for(int i = 0; i < tempFindings.size(); i++){
+                Finding finding = (Finding) tempFindings.get(i);
                 String realMineral = XplorationMap.getMineralAtPosition(finding.getLocation());
                 if(!realMineral.equalsIgnoreCase(finding.getMineral().getType())){
                     updateScore(company.getCompany_agent(), -1);
