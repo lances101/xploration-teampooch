@@ -2,6 +2,8 @@ package es.upm.common03;
 
 import es.upm.ontology.Location;
 
+import java.util.ArrayList;
+
 /**
  * Created by borismakogonyuk on 29.05.16.
  */
@@ -17,7 +19,6 @@ public class LocationUtility {
 
         return retValue;
     }
-
     public static int calculateDistance(Location lvalue, Location rvalue) {
         int xDeltaAbs = Math.abs(lvalue.getX() - rvalue.getX());
         int yDeltaAbs = Math.abs(lvalue.getY() - rvalue.getY());
@@ -33,9 +34,9 @@ public class LocationUtility {
             newLoc.setX(loc.getX()+modX);
 
         if(loc.getY() + modY > sizeY)
-            newLoc.setY(loc.getX() % 2 == 0? 1 : 2);
+            newLoc.setY(newLoc.getX() % 2 == 0? 2 : 1);
         else if(loc.getY() + modY < 1)
-            newLoc.setY(loc.getX() % 2 == 0? sizeY - 1 : sizeY);
+            newLoc.setY(newLoc.getX() % 2 == 0? sizeY: sizeY - 1);
         else
             newLoc.setY(loc.getY()+modY);
         loc.setX(newLoc.getX());
@@ -67,5 +68,51 @@ public class LocationUtility {
         }
         return newLocation;
     }
+    public static Location calculateNewLocationMultiple(Location location, int dir, int sizeX, int sizeY, int times){
+        Location result = location;
+        for(int i = 0; i < times; i++){
+            result = calculateNewLocation(result, dir, sizeX, sizeY);
+        }
+        return result;
+    }
+    public static int nextDirection(int i){
+        if(i == 6) return 1;
+        return ++i;
+    }
+    public static ArrayList<Location> getCellsAtRange(Location center, int range, int sizeX, int sizeY){
+        ArrayList<Location> results = new ArrayList<>();
+        int currentDirection = 3;
 
+        if(range == 0){
+            results.add(center);
+            return results;
+        }
+
+        /*
+        var point = startingPoint.inDir(N, Direction.North)
+        var dir = Direction.SouthEast.
+        for d = 0..Direction.count():
+            for i = 0..N-1:
+                result.add(point)
+                point = point.inDir(1, dir);
+            dir = nextDirection(dir);
+         */
+
+        Location point = calculateNewLocationMultiple(center, 1, sizeX, sizeY, range);
+        for (int dir = 0; dir < 6; dir++) {
+            for (int i = 0; i < range; i++) {
+                results.add(point);
+                point = calculateNewLocationMultiple(point, currentDirection, sizeX, sizeY, 1);
+            }
+            currentDirection = nextDirection(currentDirection);
+        }
+        return results;
+    }
+    public static ArrayList<Location> getCellsInRange(Location center, int range, int sizeX, int sizeY){
+        ArrayList<Location> results = new ArrayList<>();
+        for(int currentRange = 0; currentRange <= range; currentRange++) {
+            results.addAll(getCellsAtRange(center, currentRange, sizeX, sizeY));
+        }
+        return results;
+    }
 }

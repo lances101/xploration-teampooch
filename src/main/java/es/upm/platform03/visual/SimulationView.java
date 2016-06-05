@@ -5,15 +5,16 @@ import jade.core.AID;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SimulationView extends JFrame{
     SimulationCanvas canvas;
-    public SimulationView(String title, String[][] minerals, HashMap<AID, Location> rovers) throws HeadlessException {
+    public SimulationView(String title, String[][] minerals, HashMap<AID, Location> rovers, HashMap<AID, Location> capsules, ArrayList<Location> debugs) throws HeadlessException {
         super(title);
         this.setSize(800, 800);
-        canvas = new SimulationCanvas(minerals, rovers);
+        canvas = new SimulationCanvas(minerals, rovers, capsules, debugs);
         this.add(canvas);
     }
     public void redrawMap()
@@ -23,13 +24,18 @@ public class SimulationView extends JFrame{
 
     public class SimulationCanvas extends Canvas
     {
-        String[][] minerals;
-        HashMap<AID, Location> rovers;
+        private final HashMap<AID, Location> capsules;
+        private final HashMap<AID, Location> rovers;
+        private final String[][] minerals;
+        private final ArrayList<Location> debugs;
+
         private double hexRadius = 15;
         private int scalingFactor = 20;
-        public SimulationCanvas(String[][] minerals, HashMap<AID, Location> rovers) {
+        public SimulationCanvas(String[][] minerals, HashMap<AID, Location> rovers, HashMap<AID, Location> capsules, ArrayList<Location> debugs) {
             this.minerals = minerals;
             this.rovers = rovers;
+            this.capsules = capsules;
+            this.debugs = debugs;
             HexMech.setXYasVertex(false);
             HexMech.setHeight(60);
             HexMech.setBorders(15);
@@ -56,6 +62,10 @@ public class SimulationView extends JFrame{
                 Location loc = entry.getValue();
                 HexMech.drawHex(g, loc.getX()-1, loc.getY()-loc.getY()/2-1, Color.red, Color.black);
 
+            }
+
+            for(Location loc : debugs){
+                HexMech.drawHex(g, loc.getX()-1, loc.getY()-loc.getY()/2-1, Color.green, Color.black);
             }
         }
 
