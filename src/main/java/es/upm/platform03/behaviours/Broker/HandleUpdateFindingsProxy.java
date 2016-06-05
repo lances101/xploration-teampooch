@@ -1,6 +1,5 @@
 package es.upm.platform03.behaviours.Broker;
 
-import es.upm.ontology.FindingsMessage;
 import es.upm.platform03.World;
 import es.upm.platform03.XplorationMap;
 import jade.content.lang.Codec;
@@ -31,8 +30,7 @@ public class HandleUpdateFindingsProxy extends CyclicBehaviour{
         msg.removeReceiver(agent.getAID());
         try {
             Action act = (Action) agent.getContentManager().extractContent(msg);
-            FindingsMessage findings = (FindingsMessage) act.getAction();
-
+            
         } catch (Codec.CodecException e) {
             e.printStackTrace();
         } catch (OntologyException e) {

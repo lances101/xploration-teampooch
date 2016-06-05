@@ -2,6 +2,7 @@ package es.upm.company03;
 
 import es.upm.common03.TeamAgent;
 import es.upm.common03.ontology.*;
+import es.upm.company03.behaviors.Capsule.HandleUpdateFindings;
 import es.upm.ontology.Location;
 import jade.content.lang.Codec;
 import jade.content.onto.OntologyException;
@@ -38,9 +39,9 @@ public class Capsule extends TeamAgent {
             ac.start();
         } catch (StaleProxyException e) {
             e.printStackTrace();
-        }
+    }
         InformCompany(companyAID);
-
+        addBehaviour(new HandleUpdateFindings(this, findService("Spacecraft")));
     }
 
     private void InformCompany(AID company) {

@@ -179,7 +179,4 @@ public class XplorationMap {
                 return true;
         return false;
     }
-
-
-
 }
