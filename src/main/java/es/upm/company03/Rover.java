@@ -46,6 +46,7 @@ public class Rover extends TeamAgent {
         finding.setMineral(mineral);
         findings.addFinding(finding);
     }
+    public int getFindingsCount(){ return findings.getFinding().size();}
     public RoverJobs getCurrentJob() {
         return currentJob;
     }

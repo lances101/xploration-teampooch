@@ -6,10 +6,13 @@ import es.upm.ontology.Company;
 import es.upm.platform03.behaviours.Spacecraft.HandleCompanyQuery;
 import es.upm.platform03.behaviours.Spacecraft.HandleRegistrationRequest;
 import es.upm.platform03.behaviours.Spacecraft.HandleReleaseCapsule;
+import es.upm.platform03.behaviours.Spacecraft.HandleUpdateFindings;
+import jade.core.AID;
 import jade.core.behaviours.FSMBehaviour;
 import jade.core.behaviours.ParallelBehaviour;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Spacecraft agent. Handles the initialization of other agents of the platform.
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 public class Spacecraft extends TeamAgent {
 
     ArrayList<Company> companies = new ArrayList<>();
+    HashMap<AID, Integer> scores = new HashMap<>();
     int registrationPeriodSeconds = 10;
     public static final class States{
         public static final String START = "START";
@@ -52,6 +56,7 @@ public class Spacecraft extends TeamAgent {
         ParallelBehaviour bhvSimulation = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ALL);
         bhvSimulation.addSubBehaviour(new HandleReleaseCapsule(this, companies));
         bhvSimulation.addSubBehaviour(new HandleCompanyQuery(this, companies));
+        bhvSimulation.addSubBehaviour(new HandleUpdateFindings(this, companies, scores));
         mainFSM.registerState(bhvSimulation, States.REGISTRATION_END);
         mainFSM.registerDefaultTransition(States.START, States.REGISTRATION_END);
 

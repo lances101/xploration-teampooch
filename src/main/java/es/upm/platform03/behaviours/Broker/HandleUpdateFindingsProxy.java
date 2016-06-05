@@ -78,6 +78,7 @@ public class HandleUpdateFindingsProxy extends CyclicBehaviour{
                 String capsuleName = result.getResult().getCapsule().getCapsule_agent().getLocalName();
 
                 AID[] receivers = XplorationMap.getAgentsInRange(3, initialMessage.getSender());
+                initialMessage.removeReceiver(agent.getAID());
                 if(receivers.length > 0){
                     for (AID rec : receivers)
                         if(rec.getLocalName().equalsIgnoreCase(capsuleName))
