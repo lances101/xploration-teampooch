@@ -26,8 +26,9 @@ public class HandleRoaming extends SimpleBehaviour {
 
     @Override
     public void action() {
+        agent.informFindings();
+        agent.informMovement();
         agent.setNextDirection(TeamConstants.Direction.DOWN_RIGHT);
-        //agent.setNextDirection(random.nextInt(6)+1);
     }
 
     @Override

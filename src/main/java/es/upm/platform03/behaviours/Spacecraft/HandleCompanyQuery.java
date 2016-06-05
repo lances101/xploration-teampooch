@@ -52,6 +52,10 @@ public class HandleCompanyQuery extends CyclicBehaviour {
             else{
                 CompanyInfoResult resultAct = new CompanyInfoResult();
                 resultAct.setResult(result);
+                ACLMessage reply = msg.createReply();
+                reply.setPerformative(ACLMessage.INFORM);
+                agent.getContentManager().fillContent(reply, new Action(agent.getAID(), resultAct));
+                agent.send(reply);
             }
         } catch (Codec.CodecException e) {
             e.printStackTrace();

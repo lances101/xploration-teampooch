@@ -10,10 +10,10 @@ import java.util.Map;
 
 public class SimulationView extends JFrame{
     SimulationCanvas canvas;
-    public SimulationView(String title, String[][] minerals, HashMap<AID, Location> rovers) throws HeadlessException {
+    public SimulationView(String title, String[][] minerals, HashMap<AID, Location> rovers, HashMap<AID, Location> capsules) throws HeadlessException {
         super(title);
         this.setSize(800, 800);
-        canvas = new SimulationCanvas(minerals, rovers);
+        canvas = new SimulationCanvas(minerals, rovers, capsules);
         this.add(canvas);
     }
     public void redrawMap()
@@ -23,13 +23,16 @@ public class SimulationView extends JFrame{
 
     public class SimulationCanvas extends Canvas
     {
-        String[][] minerals;
-        HashMap<AID, Location> rovers;
+        private final HashMap<AID, Location> capsules;
+        private final HashMap<AID, Location> rovers;
+        private final String[][] minerals;
+
         private double hexRadius = 15;
         private int scalingFactor = 20;
-        public SimulationCanvas(String[][] minerals, HashMap<AID, Location> rovers) {
+        public SimulationCanvas(String[][] minerals, HashMap<AID, Location> rovers, HashMap<AID, Location> capsules) {
             this.minerals = minerals;
             this.rovers = rovers;
+            this.capsules = capsules;
             HexMech.setXYasVertex(false);
             HexMech.setHeight(60);
             HexMech.setBorders(15);
@@ -50,7 +53,12 @@ public class SimulationView extends JFrame{
                     HexMech.fillHexCoordinatesAndMineral(g, x-1, y-y/2-1, x, y, minerals[y][x], Color.yellow, Color.black);
 
                 }
-            
+            for(Map.Entry<AID, Location> entry : capsules.entrySet())
+            {
+                Location loc = entry.getValue();
+                HexMech.drawHex(g, loc.getX()-1, loc.getY()-loc.getY()/2-1, Color.blue, Color.black);
+            }
+
             for(Map.Entry<AID, Location> entry : rovers.entrySet())
             {
                 Location loc = entry.getValue();

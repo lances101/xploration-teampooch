@@ -67,6 +67,7 @@ public class HandleRegistrationRequest extends CyclicBehaviour {
                 replyInform.setPerformative(ACLMessage.FAILURE);
             } else {
                 Company company = new Company();
+                company.setName(msg.getSender().getLocalName());
                 company.setCompany_agent(msg.getSender());
                 companies.add(company);
                 System.out.printf("%s: team '%s' registered, informing...%n", agent.getLocalName(), regReq.getCompany());

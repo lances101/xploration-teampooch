@@ -2,6 +2,7 @@ package es.upm.platform03;
 
 import es.upm.common03.TeamAgent;
 import es.upm.platform03.behaviours.Broker.HandleMoveInfoProxy;
+import es.upm.platform03.behaviours.Broker.HandleUpdateFindingsProxy;
 import es.upm.platform03.behaviours.World.HandleRoverMovementReply;
 import es.upm.platform03.behaviours.World.HandleRoverMovementRequest;
 import es.upm.platform03.behaviours.World.HandleRoverResearchReply;
@@ -35,6 +36,7 @@ public class World extends TeamAgent {
         addBehaviour(new HandleRoverResearchRequest(this, researchConvo, moveConvo));
         addBehaviour(new HandleRoverResearchReply(this, 250, researchConvo));
         addBehaviour(new HandleMoveInfoProxy(this));
+        addBehaviour(new HandleUpdateFindingsProxy(this, findService("Spacecraft")));
 
         registerSelfWithServices(new String[]{"World", "Broker", "Proxy"});
     }
