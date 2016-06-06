@@ -42,6 +42,12 @@ public class XplorationMap {
         readMapFromFile(Paths.get(path));
         _instance.initializeForm();
     }
+    public static void initRandomMap(int sizeX, int sizeY){
+        _instance.sizeX = sizeX;
+        _instance.sizeY = sizeY;
+        _instance.minerals = generateRandomMaterials(sizeX, sizeY);
+        _instance.initializeForm();
+    }
     private void initializeForm() {
         simView = new SimulationView("Simulation View", minerals, rovers, capsules, debugs);
         simView.show();
@@ -72,7 +78,7 @@ public class XplorationMap {
             }
         }
     }
-    private static String[][] generateRandomMaterials(int sizeX, int sizeY) {
+    public static String[][] generateRandomMaterials(int sizeX, int sizeY) {
         String[][] minerals = new String[sizeX+1][sizeY+1];
         for (int y = 1; y < sizeX+1; y++)
             for (int x = 1; x < sizeY+1; x++) {

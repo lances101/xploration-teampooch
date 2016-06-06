@@ -28,7 +28,8 @@ public class HandleMoveInfoProxy extends CyclicBehaviour {
         AID[] receivers = XplorationMap.getAgentsInRange(3, msg.getSender());
         if(receivers.length > 0){
             for (AID rec : receivers)
-                msg.addReceiver(rec);
+                if(rec != msg.getSender())
+                    msg.addReceiver(rec);
             agent.send(msg);
         }
     }

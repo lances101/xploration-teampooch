@@ -3,6 +3,9 @@ package es.upm.company03;
 import es.upm.common03.LocationUtility;
 import es.upm.common03.TeamAgent;
 import es.upm.common03.ontology.InformAID;
+import es.upm.common03.pathFinding.LocationFactory;
+import es.upm.common03.pathFinding.LocationNode;
+import es.upm.common03.pathFinding.Map;
 import es.upm.company03.behaviors.Rover.*;
 import es.upm.ontology.*;
 import jade.content.lang.Codec;
@@ -19,6 +22,10 @@ import java.util.logging.Level;
  * Created by borismakogonyuk on 30.04.16.
  */
 public class Rover extends TeamAgent {
+    public Location getCapsuleLocation() {
+        return capsuleLocation;
+    }
+
     public enum RoverJobs{
         STARTING,
         ROAMING,
@@ -40,6 +47,12 @@ public class Rover extends TeamAgent {
     private HandleAnalysis bhvAnalysis;
     private int mapSizeX;
     private int mapSizeY;
+    private Map<LocationNode> pathMap;
+
+    public Map<LocationNode> getPathMap() {
+        return pathMap;
+    }
+
     private Findings totalFindings = new Findings();
     private Findings newFindings = new Findings();
     private RoverJobs currentJob = RoverJobs.STARTING;
@@ -104,6 +117,7 @@ public class Rover extends TeamAgent {
             return;
         }
         super.setup();
+        pathMap = new Map<>(getMapSizeX(), getMapSizeY(), new LocationFactory());
         informCompany(companyAID);
         setupFSM();
     }

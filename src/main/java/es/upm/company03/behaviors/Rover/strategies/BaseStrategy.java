@@ -28,4 +28,10 @@ public abstract class BaseStrategy {
             currentCalculatedLocation = steps.get(++currentStepIndex).calculateLocation();
         }
     }
+
+    public Location getCurrentCalculatedLocation() {
+        if(currentStepIndex == 0 && currentCalculatedLocation == null)
+            currentCalculatedLocation = steps.get(0).calculateLocation();
+        return currentCalculatedLocation;
+    }
 }

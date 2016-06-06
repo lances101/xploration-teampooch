@@ -87,17 +87,6 @@ public class LocationUtility {
             results.add(center);
             return results;
         }
-
-        /*
-        var point = startingPoint.inDir(N, Direction.North)
-        var dir = Direction.SouthEast.
-        for d = 0..Direction.count():
-            for i = 0..N-1:
-                result.add(point)
-                point = point.inDir(1, dir);
-            dir = nextDirection(dir);
-         */
-
         Location point = calculateNewLocationMultiple(center, 1, sizeX, sizeY, range);
         for (int dir = 0; dir < 6; dir++) {
             for (int i = 0; i < range; i++) {
@@ -115,4 +104,31 @@ public class LocationUtility {
         }
         return results;
     }
+    public static int calculateRange(Location start, Location end, int sizeX, int sizeY){
+        int limit = (sizeX > sizeY? sizeX : sizeY) / 2;
+        for(int currentRange = 0; currentRange <= limit; currentRange++) {
+            int currentDirection = 3;
+            if(currentRange == 0){
+                if(areColliding(start, end)) return currentRange;
+                continue;
+            }
+            Location point = calculateNewLocationMultiple(start, 1, sizeX, sizeY, currentRange);
+            for (int dir = 0; dir < 6; dir++) {
+                for (int i = 0; i < currentRange; i++) {
+                    point = calculateNewLocationMultiple(point, currentDirection, sizeX, sizeY, 1);
+                    if(areColliding(end,point)) return currentRange;
+                }
+                currentDirection = nextDirection(currentDirection);
+            }
+        }
+        return 0;
+    }
+    public static int calculateDirection(Location start, Location end, int sizeX, int sizeY){
+        for(int i = 1; i <= 6; i++){
+            if(areColliding(end, calculateNewLocation(start, i, sizeX, sizeY))) return i;
+        }
+        return 0;
+    }
+
+
 }

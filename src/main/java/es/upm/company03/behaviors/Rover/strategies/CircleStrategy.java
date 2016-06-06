@@ -14,7 +14,7 @@ public class CircleStrategy extends BaseStrategy {
 
     private final Location center;
     private final int range;
-    protected CircleStrategy(Rover agent, Location center, int range) {
+    public CircleStrategy(Rover agent, Location center, int range) {
         super(agent);
         this.center = center;
         this.range = range;
