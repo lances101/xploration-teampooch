@@ -1,5 +1,6 @@
 package es.upm.platform03.behaviours.World;
 
+import es.upm.common03.TeamConstants;
 import es.upm.ontology.RequestRoverMovement;
 import es.upm.platform03.World;
 import es.upm.platform03.XplorationMap;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 
 
 public class HandleRoverMovementRequest extends CyclicBehaviour {
-    int movementMillis = 1000;
     World agent;
     ArrayList<Pair<ACLMessage, DateTime>> moveConvo;
     ArrayList<Pair<ACLMessage, DateTime>> researchConvo;
@@ -94,7 +94,7 @@ public class HandleRoverMovementRequest extends CyclicBehaviour {
             RequestRoverMovement request = (RequestRoverMovement) action.getAction();
             int direction = request.getDirection().getX();
             if (direction >= 0 && direction < 7) {
-                moveConvo.add(new Pair<>(msg, DateTime.now().plusMillis(movementMillis)));
+                moveConvo.add(new Pair<>(msg, DateTime.now().plusMillis(TeamConstants.MovementPeriodSeconds * 1000)));
                 return true;
             }
         } catch (Codec.CodecException e) {

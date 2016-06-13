@@ -1,5 +1,6 @@
 package es.upm.platform03.behaviours.World;
 
+import es.upm.common03.TeamConstants;
 import es.upm.platform03.World;
 import es.upm.platform03.XplorationMap;
 import jade.core.behaviours.CyclicBehaviour;
@@ -12,7 +13,6 @@ import java.util.ArrayList;
 
 
 public class HandleRoverResearchRequest extends CyclicBehaviour {
-    int movementMillis = 1000;
     World agent;
     ArrayList<Pair<ACLMessage, DateTime>> researchConvo;
     ArrayList<Pair<ACLMessage, DateTime>> moveConvo;
@@ -46,7 +46,7 @@ public class HandleRoverResearchRequest extends CyclicBehaviour {
             block();
             return;
         }
-        researchConvo.add(new Pair<>(msg, DateTime.now().plusMillis(movementMillis)));
+        researchConvo.add(new Pair<>(msg, DateTime.now().plusMillis(TeamConstants.ResearchPeriodSeconds)));
         ACLMessage reply = msg.createReply();
         reply.setPerformative(ACLMessage.AGREE);
         agent.send(reply);
