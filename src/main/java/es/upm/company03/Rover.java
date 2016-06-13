@@ -15,6 +15,7 @@ import jade.core.AID;
 import jade.core.behaviours.FSMBehaviour;
 import jade.lang.acl.ACLMessage;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -55,7 +56,19 @@ public class Rover extends TeamAgent {
 
     private Findings totalFindings = new Findings();
     private Findings newFindings = new Findings();
+    private HashMap<AID, Location> otherRovers = new HashMap<>();
     private RoverJobs currentJob = RoverJobs.STARTING;
+    private boolean pathInvalidated = false;
+    public void setPathInvalidated(boolean state){
+        pathInvalidated = state;
+    }
+    public boolean isPathInvalidated(){
+        return pathInvalidated;
+    }
+    public void updateRoverInfo(AID aid, Location location){
+        pathInvalidated = true;
+        otherRovers.put(aid, location);
+    }
     public void addFinding(Location roverLocation, Mineral mineral) {
         Iterator<Finding> iter = totalFindings.getAllFinding();
         while(iter.hasNext()) {
@@ -117,6 +130,7 @@ public class Rover extends TeamAgent {
             return;
         }
         super.setup();
+        addBehaviour(new HandleRoverInfo(this));
         pathMap = new Map<>(getMapSizeX(), getMapSizeY(), new LocationFactory());
         informCompany(companyAID);
         setupFSM();
@@ -126,7 +140,7 @@ public class Rover extends TeamAgent {
         fsm = new FSMBehaviour();
 
         fsm.registerFirstState(new HandleInitialCapsuleHandshake(this, brokerAID), FSMStates.START);
-        fsm.registerState(new HandleRoaming(this), FSMStates.ROAMING);
+        fsm.registerState(new HandleRoaming(this, otherRovers), FSMStates.ROAMING);
         fsm.registerState(new HandleDelivering(this), FSMStates.DELIVERING);
         fsm.registerState(new HandleMovement(this, worldAID), FSMStates.MOVING);
         fsm.registerState(new HandleAnalysis(this, worldAID), FSMStates.ANALYZING);
@@ -135,6 +149,9 @@ public class Rover extends TeamAgent {
         fsm.registerTransition(FSMStates.ROAMING, FSMStates.DELIVERING, HandleRoaming.EndCodes.TO_DELIVERING, new String[]{FSMStates.DELIVERING});
         fsm.registerTransition(FSMStates.ROAMING, FSMStates.MOVING, HandleRoaming.EndCodes.TO_MOVING, new String[]{FSMStates.MOVING});
         fsm.registerTransition(FSMStates.ROAMING, FSMStates.ANALYZING, HandleRoaming.EndCodes.TO_ANALYZING, new String[]{FSMStates.ANALYZING});
+        fsm.registerTransition(FSMStates.DELIVERING, FSMStates.DELIVERING, 0);
+        fsm.registerTransition(FSMStates.DELIVERING, FSMStates.ROAMING, HandleDelivering.EndCodes.TO_ROAMING);
+        fsm.registerTransition(FSMStates.DELIVERING, FSMStates.MOVING, HandleDelivering.EndCodes.TO_MOVING, new String[]{FSMStates.MOVING});
         fsm.registerTransition(FSMStates.MOVING, FSMStates.ROAMING, HandleMovement.EndCodes.TO_ROAMING);
         fsm.registerTransition(FSMStates.MOVING, FSMStates.DELIVERING, HandleMovement.EndCodes.TO_DELIVERING);
         fsm.registerTransition(FSMStates.ANALYZING, FSMStates.ROAMING, 0);
@@ -188,6 +205,7 @@ public class Rover extends TeamAgent {
             findingsMessage.setFindings(newFindings);
             getContentManager().fillContent(msg, new Action(getAID(), findingsMessage));
             send(msg);
+            newFindings.clearAllFinding();
         } catch (Codec.CodecException e) {
             e.printStackTrace();
         } catch (OntologyException e) {

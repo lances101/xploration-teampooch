@@ -25,6 +25,7 @@ public class HandleMoveInfoProxy extends CyclicBehaviour {
             return;
         }
         msg.removeReceiver(agent.getAID());
+        if(XplorationMap.getRoverPosition(msg.getSender()) == null) return;
         AID[] receivers = XplorationMap.getAgentsInRange(3, msg.getSender());
         if(receivers.length > 0){
             for (AID rec : receivers)

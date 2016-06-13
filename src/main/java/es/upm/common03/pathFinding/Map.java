@@ -96,6 +96,14 @@ public class Map<T extends AbstractNode> {
         }
     }
 
+    public void resetAllWalkable(){
+        for (int i = 1; i <= width; i++) {
+            for (int j = 1; j <= height; j++) {
+                setWalkable(i, j, true);
+            }
+        }
+    }
+
     /**
      * sets nodes walkable field at given coordinates to given value.
      * <p>

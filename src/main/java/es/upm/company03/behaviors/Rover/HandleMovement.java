@@ -42,6 +42,7 @@ public class HandleMovement extends SimpleBehaviour {
     public void action() {
         switch (state) {
             case Send:
+                agent.informMovement();
                 ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
                 message.setProtocol(XplorationOntology.PROTOCOL_ROVER_MOVEMENT);
                 message.setOntology(agent.getxOntology().getName());

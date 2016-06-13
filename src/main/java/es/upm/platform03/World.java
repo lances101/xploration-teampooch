@@ -11,6 +11,7 @@ import jade.lang.acl.ACLMessage;
 import javafx.util.Pair;
 import org.joda.time.DateTime;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -22,15 +23,15 @@ public class World extends TeamAgent {
     protected void setup() {
         super.setup();
 
-        XplorationMap.initRandomMap(20, 20);
-        /*try {
+
+        try {
             XplorationMap.initMapFromFile(System.getProperty("user.home")+ "/Downloads/map.txt");
 
         } catch (IOException e) {
             System.out.println("Could not setup Map. Exiting. ");
             e.printStackTrace();
             this.takeDown();
-        }*/
+        }
 
         addBehaviour(new HandleRoverMovementRequest(this, moveConvo, researchConvo));
         addBehaviour(new HandleRoverMovementReply(this, 250, moveConvo));
