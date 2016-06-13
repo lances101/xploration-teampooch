@@ -56,7 +56,7 @@ public class HandleRoaming extends OneShotBehaviour {
         }
         //For fast informs
         if(isInDeliveryRange() && agent.getFindingsCount() > 0){
-            //agent.informFindings();
+            agent.informFindings();
         }
         if(agent.getFindingsCount() > 3){
             System.out.println("DELIVERING");
