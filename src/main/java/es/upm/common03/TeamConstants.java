@@ -4,10 +4,13 @@ package es.upm.common03;
  * Created by borismakogonyuk on 08.05.16.
  */
 public class TeamConstants {
-    public static final int RegistrationPeriodSeconds = 10;
-    public static final int SimulationPeriodSeconds = 180;
-    public static final int MovementPeriodSeconds = 3;
-    public static final int ResearchPeriodSeconds = 3;
+
+    public static class Settings {
+        public static final int RegistrationPeriodSeconds = 10;
+        public static final int SimulationPeriodSeconds = 180;
+        public static final int MovementPeriodSeconds = 3;
+        public static final int ResearchPeriodSeconds = 3;
+    }
 
     public static final class Direction {
         public final static int CANCEL = -1;

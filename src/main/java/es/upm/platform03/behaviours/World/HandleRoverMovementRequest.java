@@ -94,7 +94,7 @@ public class HandleRoverMovementRequest extends CyclicBehaviour {
             RequestRoverMovement request = (RequestRoverMovement) action.getAction();
             int direction = request.getDirection().getX();
             if (direction >= 0 && direction < 7) {
-                moveConvo.add(new Pair<>(msg, DateTime.now().plusMillis(TeamConstants.MovementPeriodSeconds * 1000)));
+                moveConvo.add(new Pair<>(msg, DateTime.now().plusMillis(TeamConstants.Settings.MovementPeriodSeconds * 1000)));
                 return true;
             }
         } catch (Codec.CodecException e) {

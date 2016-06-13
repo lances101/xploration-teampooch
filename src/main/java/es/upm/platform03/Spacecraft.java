@@ -34,7 +34,7 @@ public class Spacecraft extends TeamAgent {
         System.out.printf("%s is starting up!%n", getLocalName());
         setupFSM();
         System.out.printf("%s: registration is up! Ends in %s seconds%n",
-                getLocalName(), TeamConstants.RegistrationPeriodSeconds);
+                getLocalName(), TeamConstants.Settings.RegistrationPeriodSeconds);
         registerSelfWithServices(new String[]{"Spacecraft"});
     }
 
@@ -42,14 +42,14 @@ public class Spacecraft extends TeamAgent {
     {
         mainFSM = new FSMBehaviour();
         ParallelBehaviour bhvStart = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ANY);
-        bhvStart.addSubBehaviour(new HandleRegistrationRequest(this, companies, TeamConstants.RegistrationPeriodSeconds));
-        bhvStart.addSubBehaviour(new EmptyTimeoutBehavior(this, TeamConstants.RegistrationPeriodSeconds*1000));
+        bhvStart.addSubBehaviour(new HandleRegistrationRequest(this, companies, TeamConstants.Settings.RegistrationPeriodSeconds));
+        bhvStart.addSubBehaviour(new EmptyTimeoutBehavior(this, TeamConstants.Settings.RegistrationPeriodSeconds*1000));
         mainFSM.registerFirstState(bhvStart, States.START);
         ParallelBehaviour bhvSimulation = new ParallelBehaviour(this, ParallelBehaviour.WHEN_ANY);
         bhvSimulation.addSubBehaviour(new HandleReleaseCapsule(this, companies));
         bhvSimulation.addSubBehaviour(new HandleCompanyQuery(this, companies));
         bhvSimulation.addSubBehaviour(new HandleUpdateFindings(this, companies, scores));
-        bhvSimulation.addSubBehaviour(new EmptyTimeoutBehavior(this, TeamConstants.SimulationPeriodSeconds*1000));
+        bhvSimulation.addSubBehaviour(new EmptyTimeoutBehavior(this, TeamConstants.Settings.SimulationPeriodSeconds*1000));
         mainFSM.registerState(bhvSimulation, States.REGISTRATION_END);
         mainFSM.registerState(new HandleEndGame(this, companies, scores), States.END_GAME);
         mainFSM.registerDefaultTransition(States.START, States.REGISTRATION_END);

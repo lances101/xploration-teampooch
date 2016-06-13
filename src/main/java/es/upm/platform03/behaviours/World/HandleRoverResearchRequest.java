@@ -46,7 +46,7 @@ public class HandleRoverResearchRequest extends CyclicBehaviour {
             block();
             return;
         }
-        researchConvo.add(new Pair<>(msg, DateTime.now().plusMillis(TeamConstants.ResearchPeriodSeconds)));
+        researchConvo.add(new Pair<>(msg, DateTime.now().plusMillis(TeamConstants.Settings.ResearchPeriodSeconds)));
         ACLMessage reply = msg.createReply();
         reply.setPerformative(ACLMessage.AGREE);
         agent.send(reply);
