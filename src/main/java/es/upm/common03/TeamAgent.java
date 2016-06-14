@@ -137,8 +137,9 @@ public abstract class TeamAgent extends Agent {
         try {
             found = DFService.search(this, dfd);
             if (found.length == 0) {
-                System.out.printf("%s: Search yielded nothing. Waiting.%n",
+                System.out.printf("%s: Search yielded nothing.%n",
                         this.getLocalName());
+                return null;
             }
             agent = found[0].getName();
             return agent;

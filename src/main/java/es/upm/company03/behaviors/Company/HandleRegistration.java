@@ -22,7 +22,7 @@ public class HandleRegistration extends SimpleBehaviour {
      * Ends if succeeds and tries 3 times if it fails.
      */
     final static int maxRegTries = 3;
-    final static String companyName = "Company";
+    final static String companyName = "Company03";
     REGSTATE regState = REGSTATE.START;
     int regTries = 0;
     TeamAgent agent;
@@ -31,6 +31,7 @@ public class HandleRegistration extends SimpleBehaviour {
     public HandleRegistration(TeamAgent agent) {
         super(agent);
         this.agent = agent;
+        this.matchReplies = MessageTemplate.and(agent.getMtOntoAndCodec(), MessageTemplate.MatchProtocol(agent.getxOntology().PROTOCOL_REGISTRATION));
     }
 
     @Override
@@ -92,6 +93,7 @@ public class HandleRegistration extends SimpleBehaviour {
                 RegistrationRequest regReq = new RegistrationRequest();
                 regReq.setCompany(companyName);
 
+
                 agent.getContentManager().fillContent(message, new Action(agent.getAID(), regReq));
 
                 agent.send(message);
@@ -110,10 +112,6 @@ public class HandleRegistration extends SimpleBehaviour {
     }
 
     void HandleMessages() {
-        if(matchReplies == null)
-        {
-            matchReplies = MessageTemplate.and(agent.getMtOntoAndCodec(), MessageTemplate.MatchProtocol(agent.getxOntology().PROTOCOL_REGISTRATION));
-        }
         ACLMessage msg = agent.receive(matchReplies);
         if (msg == null) {
             block();

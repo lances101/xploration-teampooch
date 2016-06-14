@@ -71,5 +71,4 @@ public class Capsule extends TeamAgent {
 
     }
 
-
 }

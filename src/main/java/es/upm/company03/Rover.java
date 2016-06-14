@@ -123,6 +123,10 @@ public class Rover extends TeamAgent {
         super.setup();
         worldAID = findService("World");
         brokerAID = findService("Broker");
+        if(brokerAID == null){
+            System.out.println("No Broker found. Lets hope they at least have a world :S ");
+            brokerAID = worldAID;
+        }
 
         if (worldAID == null || brokerAID == null) {
             System.out.println("CRITICAL. World or Broker missing");
