@@ -12,6 +12,7 @@ import javafx.util.Pair;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 
@@ -25,7 +26,7 @@ public class World extends TeamAgent {
 
 
         try {
-            XplorationMap.initMapFromFile(System.getProperty("user.home")+ "/Downloads/map.txt");
+            XplorationMap.initMapFromFile(Paths.get("").toAbsolutePath() + "/config/map.txt");
 
         } catch (IOException e) {
             System.out.println("Could not setup Map. Exiting. ");

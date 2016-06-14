@@ -13,12 +13,9 @@ import es.upm.company03.behaviors.Company.HandleRegistration;
  */
 public class Company extends TeamAgent {
 
-
-    final static String companySuffix = "03";
-
     @Override
     protected void setup() {
-        System.out.printf("%s is starting up!%n", "Company" + companySuffix);
+        System.out.printf("%s is starting up!%n", this.getLocalName());
 
         addBehaviour(new HandleRegistration(this));
         addBehaviour(new HandleCapsuleReleaseInform(this));

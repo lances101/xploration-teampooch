@@ -1,0 +1,11 @@
+(10,10)
+A A D A B
+A B D E B
+A A B E B
+A B B E D
+A B B E A
+A B B E A
+A C D A D
+C C A C C
+B E C A C
+C C E C B
